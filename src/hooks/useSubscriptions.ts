@@ -32,7 +32,6 @@ export function useSubscriptions() {
       setError(null)
     } catch (err: any) {
       setError(err.message)
-      console.error('Error fetching subscriptions:', err)
     } finally {
       setLoading(false)
     }
@@ -134,6 +133,17 @@ export function useSubscriptions() {
       // Handle empty strings for UUID fields in updates - convert to null
       if ('bank_id' in normalizedUpdates && !normalizedUpdates.bank_id) {
         normalizedUpdates.bank_id = null
+      }
+
+      // Clear last_reminder_sent if payment date or reminder settings change
+      // This allows reminders to be sent again for the new date/settings
+      if (
+        'next_payment_date' in normalizedUpdates ||
+        'reminder_days_before' in normalizedUpdates ||
+        'reminder_time' in normalizedUpdates ||
+        'status' in normalizedUpdates
+      ) {
+        (normalizedUpdates as any).last_reminder_sent = null
       }
 
       // @ts-ignore - Temporary workaround for Supabase type issues

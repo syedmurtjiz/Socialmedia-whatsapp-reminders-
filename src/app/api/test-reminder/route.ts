@@ -63,14 +63,11 @@ export async function POST() {
 
         if (response.ok) {
           results.sent++
-          console.log(`✅ Sent reminder for ${subscription.name}`)
         } else {
           results.failed++
-          console.error(`❌ Failed to send reminder for ${subscription.name}:`, data)
         }
       } catch (error) {
         results.failed++
-        console.error(`❌ Error sending reminder for ${subscription.name}:`, error)
       }
     }
 
@@ -83,7 +80,6 @@ export async function POST() {
       })),
     })
   } catch (error) {
-    console.error('Error processing test reminders:', error)
     return NextResponse.json(
       { error: 'Failed to process test reminders' },
       { status: 500 }

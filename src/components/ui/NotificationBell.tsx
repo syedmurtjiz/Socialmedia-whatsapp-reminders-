@@ -1,14 +1,15 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { FiBell, FiX, FiCheck, FiClock } from 'react-icons/fi'
-import { useNotifications } from '@/contexts/NotificationContext'
+import { FiBell, FiX, FiCheck, FiClock, FiMessageSquare, FiAlertCircle, FiCheckCircle } from 'react-icons/fi'
+import { useNotifications } from '@/hooks/useNotifications'
 import { format } from 'date-fns'
 
 export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications()
+  const { notifications, loading, getUnreadCount, markAsRead, markAllAsRead, deleteNotification } = useNotifications()
+  const unreadCount = getUnreadCount()
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -83,35 +84,92 @@ export default function NotificationBell() {
                   <li
                     key={notification.id}
                     className={`border-b border-gray-100 dark:border-chocolate-700 last:border-0 ${
-                      !notification.read ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                      notification.status !== 'read' ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                     }`}
                   >
                     <div className="p-4 hover:bg-gray-50 dark:hover:bg-chocolate-800 transition-colors">
-                      <div className="flex justify-between">
-                        <h4 className="font-medium text-gray-900 dark:text-chocolate-100">
-                          {notification.title}
-                        </h4>
-                        {!notification.read && (
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start gap-2 flex-1">
+                          {/* Status Icon */}
+                          {notification.status === 'sent' && (
+                            <FiCheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          )}
+                          {notification.status === 'failed' && (
+                            <FiAlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                          )}
+                          {notification.status === 'pending' && (
+                            <FiClock className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                          )}
+                          {notification.type === 'whatsapp_reminder' && (
+                            <FiMessageSquare className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0 mt-1" />
+                          )}
+                          
+                          <div className="flex-1 min-w-0">
+                            {/* Subscription name as title */}
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-semibold text-gray-900 dark:text-chocolate-100 text-base">
+                                {notification.title.replace('Reminder: ', '').replace('Failed: ', '')}
+                              </h4>
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
+                                notification.status === 'sent' 
+                                  ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                                  : notification.status === 'failed'
+                                  ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                              }`}>
+                                {notification.status === 'sent' ? '✓' : notification.status === 'failed' ? '✗' : '⏳'}
+                              </span>
+                            </div>
+                            
+                            {/* WhatsApp Message - Exact same as sent */}
+                            <div className="bg-green-50 dark:bg-green-900/10 border-l-3 border-green-500 p-2 rounded mb-2">
+                              <p className="text-sm text-gray-800 dark:text-chocolate-200 whitespace-pre-wrap">
+                                {notification.message}
+                              </p>
+                            </div>
+                            
+                            {/* Time sent */}
+                            {notification.sent_at && (
+                              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-chocolate-300">
+                                <FiClock className="w-3 h-3" />
+                                <span>Sent at {new Date(notification.sent_at).toLocaleTimeString('en-US', { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit',
+                                  hour12: true
+                                })}</span>
+                              </div>
+                            )}
+                            
+                            {notification.error_message && (
+                              <p className="text-xs text-red-600 dark:text-red-400 mt-2 p-2 bg-red-50 dark:bg-red-900/20 rounded">
+                                ❌ {notification.error_message}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {notification.status !== 'read' && (
                           <button
                             onClick={() => handleMarkAsRead(notification.id)}
-                            className="text-gray-400 hover:text-gray-600 dark:hover:text-chocolate-200"
+                            className="text-gray-400 hover:text-gray-600 dark:hover:text-chocolate-200 flex-shrink-0"
                             title="Mark as read"
                           >
                             <FiCheck className="w-4 h-4" />
                           </button>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 dark:text-chocolate-300 mt-1">
-                        {notification.message}
-                      </p>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs text-gray-500 dark:text-chocolate-400">
-                          {formatDate(notification.created_at)}
+                      
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100 dark:border-chocolate-700 text-xs text-gray-500 dark:text-chocolate-400">
+                        <span>
+                          {notification.sent_at 
+                            ? formatDate(notification.sent_at)
+                            : formatDate(notification.created_at)
+                          }
                         </span>
-                        {!notification.read && (
-                          <span className="inline-flex items-center text-xs text-blue-600 dark:text-blue-400">
+                        {notification.status !== 'read' && (
+                          <span className="inline-flex items-center text-blue-600 dark:text-blue-400 font-medium">
                             <FiClock className="w-3 h-3 mr-1" />
-                            Unread
+                            New
                           </span>
                         )}
                       </div>

@@ -35,7 +35,6 @@ export async function POST(request: Request) {
     const data = await response.json()
 
     if (!response.ok) {
-      console.error('WhatsApp API Error:', data)
       return NextResponse.json(
         { error: data.error?.message || 'Failed to send WhatsApp message' },
         { status: response.status }
@@ -44,7 +43,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, data })
   } catch (error) {
-    console.error('Error sending WhatsApp message:', error)
     return NextResponse.json(
       { error: 'Failed to send WhatsApp message' },
       { status: 500 }

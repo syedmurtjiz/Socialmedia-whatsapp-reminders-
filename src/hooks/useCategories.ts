@@ -30,7 +30,6 @@ export function useCategories() {
       setError(null)
     } catch (err: any) {
       setError(err.message)
-      console.error('Error fetching categories:', err)
     } finally {
       setLoading(false)
     }

@@ -166,29 +166,53 @@ export interface Database {
         Row: {
           id: string
           user_id: string
-          subscription_id: string | null
+          subscription_id: string
+          type: string
           title: string
           message: string
-          read: boolean
+          whatsapp_number: string | null
+          whatsapp_message_id: string | null
+          status: string
+          error_message: string | null
+          scheduled_at: string | null
+          sent_at: string | null
+          read_at: string | null
           created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
           user_id: string
-          subscription_id?: string | null
+          subscription_id: string
+          type?: string
           title: string
           message: string
-          read?: boolean
+          whatsapp_number?: string | null
+          whatsapp_message_id?: string | null
+          status?: string
+          error_message?: string | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          read_at?: string | null
           created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
           user_id?: string
-          subscription_id?: string | null
+          subscription_id?: string
+          type?: string
           title?: string
           message?: string
-          read?: boolean
+          whatsapp_number?: string | null
+          whatsapp_message_id?: string | null
+          status?: string
+          error_message?: string | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          read_at?: string | null
           created_at?: string
+          updated_at?: string
         }
       }
     }

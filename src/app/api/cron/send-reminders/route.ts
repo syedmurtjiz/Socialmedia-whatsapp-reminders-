@@ -23,19 +23,16 @@ export async function GET() {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    console.log(`⏰ Current time: ${now.toLocaleTimeString()}`)
-
-    // Query ALL subscriptions (bypasses RLS with service role)
+    // Query ACTIVE subscriptions only (bypasses RLS with service role)
     const { data: subscriptions, error } = await supabase
       .from('subscriptions')
       .select('*')
+      .eq('status', 'active')
       .gte('next_payment_date', today.toISOString().split('T')[0])
 
     if (error) {
       throw error
     }
-
-    console.log(`📋 Found ${subscriptions?.length || 0} total subscriptions`)
 
     const results = {
       total: subscriptions?.length || 0,
@@ -60,10 +57,6 @@ export async function GET() {
         (paymentDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
       )
 
-      console.log(
-        `📅 ${subscription.name}: ${daysUntilPayment} days until payment, reminder set for ${subscription.reminder_days_before} days before`
-      )
-
       // Check if reminder already sent today (prevent duplicates)
       const todayStr = today.toISOString().split('T')[0]
       const lastSentStr = subscription.last_reminder_sent 
@@ -71,7 +64,6 @@ export async function GET() {
         : null
 
       if (lastSentStr === todayStr) {
-        console.log(`⏭️ Skipping ${subscription.name} - reminder already sent today`)
         results.skipped++
         continue
       }
@@ -84,12 +76,9 @@ export async function GET() {
       const isTimeToSend = currentHour === reminderHour && currentMinute === reminderMinute
 
       if (!isTimeToSend) {
-        console.log(`⏰ Skipping ${subscription.name} - not time yet (reminder at ${String(reminderHour).padStart(2, '0')}:${String(reminderMinute).padStart(2, '0')}, current: ${String(currentHour).padStart(2, '0')}:${String(currentMinute).padStart(2, '0')})`)
         results.skipped++
         continue
       }
-
-      console.log(`✅ Time match for ${subscription.name} - sending now!`)
 
       // Send reminder if within the reminder window
       if (daysUntilPayment === subscription.reminder_days_before) {
@@ -118,6 +107,8 @@ export async function GET() {
             }
           )
 
+          const whatsappData = await whatsappResponse.json()
+
           if (whatsappResponse.ok) {
             results.sent++
             
@@ -127,29 +118,53 @@ export async function GET() {
               .update({ last_reminder_sent: new Date().toISOString() })
               .eq('id', subscription.id)
             
-            console.log(`✅ Sent reminder for ${subscription.name}`)
+            // Log successful notification
+            const { data: notifData, error: notifError } = await supabase
+              .from('notifications')
+              .insert({
+                user_id: subscription.user_id,
+                subscription_id: subscription.id,
+                type: 'whatsapp_reminder',
+                title: `Reminder: ${subscription.service_name || subscription.name}`,
+                message: message,
+                whatsapp_number: subscription.whatsapp_number,
+                whatsapp_message_id: whatsappData.messages?.[0]?.id || null,
+                status: 'sent',
+                scheduled_at: new Date().toISOString(),
+                sent_at: new Date().toISOString()
+              })
+              .select()
           } else {
             results.failed++
-            const errorData = await whatsappResponse.json().catch(() => ({}))
-            console.error(`❌ Failed to send WhatsApp for ${subscription.name}:`, whatsappResponse.status, errorData)
+            
+            // Log failed notification
+            const { error: notifError } = await supabase
+              .from('notifications')
+              .insert({
+                user_id: subscription.user_id,
+                subscription_id: subscription.id,
+                type: 'whatsapp_reminder',
+                title: `Failed: ${subscription.service_name || subscription.name}`,
+                message: message,
+                whatsapp_number: subscription.whatsapp_number,
+                status: 'failed',
+                error_message: `WhatsApp API error: ${whatsappResponse.status} - ${JSON.stringify(whatsappData)}`,
+                scheduled_at: new Date().toISOString()
+              })
           }
         } catch (error) {
           results.failed++
-          console.error(`❌ Error sending reminder for ${subscription.name}:`, error)
         }
       } else {
         results.skipped++
       }
     }
 
-    console.log('📊 Results:', results)
-
     return NextResponse.json({
       message: 'Reminder check completed',
       results,
     })
   } catch (error) {
-    console.error('❌ Error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

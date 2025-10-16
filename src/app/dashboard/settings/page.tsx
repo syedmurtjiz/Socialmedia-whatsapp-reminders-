@@ -116,7 +116,7 @@ export default function Settings() {
       await signOut()
       router.push('/auth')
     } catch (error) {
-      console.error('Error signing out:', error)
+      // Error signing out
     }
   }
 

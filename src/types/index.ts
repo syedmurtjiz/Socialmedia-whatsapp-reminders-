@@ -22,15 +22,37 @@ export interface Category {
 
 export interface Bank {
   id: string
+  user_id: string
   name: string
-  logo_url: string | null
   created_at: string
   updated_at: string
+}
+
+export interface Notification {
+  id: string
+  user_id: string
+  subscription_id: string
+  type: NotificationType
+  title: string
+  message: string
+  whatsapp_number?: string
+  whatsapp_message_id?: string
+  status: NotificationStatus
+  error_message?: string
+  scheduled_at?: string
+  sent_at?: string
+  read_at?: string
+  created_at: string
+  updated_at: string
+  // Joined fields
+  subscription?: Subscription
 }
 
 export type BillingCycle = 'monthly' | 'yearly' | 'weekly' | 'custom'
 export type SubscriptionStatus = 'active' | 'inactive' | 'cancelled'
 export type Currency = 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD'
+export type NotificationType = 'whatsapp_reminder' | 'email_reminder' | 'system'
+export type NotificationStatus = 'pending' | 'sent' | 'failed' | 'read'
 
 export interface Subscription {
   id: string

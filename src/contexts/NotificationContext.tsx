@@ -44,7 +44,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
       const data = result.data as Notification[] | null
       setNotifications(data || [])
-      setUnreadCount(data?.filter((n) => !n.read).length || 0)
+      setUnreadCount(data?.filter((n) => n.status !== 'read').length || 0)
     } catch (error) {
       console.error('Error fetching notifications:', error)
     } finally {
@@ -60,7 +60,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       // @ts-ignore - Supabase typing issue workaround
       const result = await (supabase as any)
         .from('notifications')
-        .update({ read: true })
+        .update({ status: 'read', read_at: new Date().toISOString() })
         .eq('id', id)
         .eq('user_id', user.id)
         .select()
@@ -69,7 +69,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
       setNotifications(prev => 
         prev.map(notification => 
-          notification.id === id ? { ...notification, read: true } : notification
+          notification.id === id ? { ...notification, status: 'read', read_at: new Date().toISOString() } : notification
         )
       )
       setUnreadCount(prev => Math.max(0, prev - 1))
@@ -86,15 +86,15 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       // @ts-ignore - Supabase typing issue workaround
       const result = await (supabase as any)
         .from('notifications')
-        .update({ read: true })
+        .update({ status: 'read', read_at: new Date().toISOString() })
         .eq('user_id', user.id)
-        .eq('read', false)
+        .neq('status', 'read')
         .select()
 
       if (result.error) throw result.error
 
       setNotifications(prev => 
-        prev.map(notification => ({ ...notification, read: true }))
+        prev.map(notification => ({ ...notification, status: 'read', read_at: new Date().toISOString() }))
       )
       setUnreadCount(0)
     } catch (error) {
@@ -142,9 +142,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             await createNotification({
               user_id: user.id,
               subscription_id: subscription.id,
+              type: 'system',
               title: 'Upcoming Payment',
               message: `Your ${subscription.service_name} subscription payment is due in 2 days.`,
-              read: false
+              status: 'sent'
             })
           }
         }
@@ -168,9 +169,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             await createNotification({
               user_id: user.id,
               subscription_id: subscription.id,
+              type: 'system',
               title: 'Payment Due Tomorrow',
               message: `Your ${subscription.service_name} subscription payment is due tomorrow.`,
-              read: false
+              status: 'sent'
             })
           }
         }
@@ -240,17 +242,18 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       )
       .subscribe()
 
+    // Disabled: Only show WhatsApp reminder logs, not automatic system notifications
     // Set up interval to check for upcoming payments
-    const interval = setInterval(() => {
-      checkUpcomingPayments()
-    }, 60000) // Check every minute
+    // const interval = setInterval(() => {
+    //   checkUpcomingPayments()
+    // }, 60000) // Check every minute
 
     // Initial check
-    checkUpcomingPayments()
+    // checkUpcomingPayments()
 
     return () => {
       supabase.removeChannel(channel)
-      clearInterval(interval)
+      // clearInterval(interval) // Disabled with automatic notifications
     }
   }, [user, checkUpcomingPayments, fetchNotifications])
 

@@ -29,7 +29,6 @@ export function useBanks(): { banks: Bank[]; loading: boolean; error: Error | nu
         
         setBanks(data || []);
       } catch (err) {
-        console.error('Error fetching banks:', err);
         setError(err as Error);
       } finally {
         setLoading(false);
