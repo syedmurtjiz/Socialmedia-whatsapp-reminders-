@@ -97,17 +97,6 @@ const subscriptionSchema = z.object({
     
     const startDate = new Date(startYear, startMonth - 1, startDay)
     const nextPaymentDate = new Date(nextYear, nextMonth - 1, nextDay)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-
-    // Start date cannot be in the future
-    if (startDate > today) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Start date cannot be in the future',
-        path: ['start_date']
-      })
-    }
 
     // Start date should be before or equal to next payment date
     if (startDate > nextPaymentDate) {
@@ -172,37 +161,21 @@ export default function SubscriptionForm({
     // Parse date in local timezone to avoid UTC issues
     const [startYear, startMonth, startDay] = startDate.split('-').map(Number)
     const start = new Date(startYear, startMonth - 1, startDay)
-    const nextDate = new Date(start)
-    
-    switch (billingCycle) {
-      case 'weekly':
-        nextDate.setDate(start.getDate() + 7)
-        break
-      case 'monthly':
-        nextDate.setMonth(start.getMonth() + 1)
-        // Handle month-end edge cases
-        if (nextDate.getDate() !== start.getDate()) {
-          nextDate.setDate(0) // Set to last day of previous month
-        }
-        break
-      case 'yearly':
-        nextDate.setFullYear(start.getFullYear() + 1)
-        // Handle leap year edge case (Feb 29)
-        if (nextDate.getDate() !== start.getDate()) {
-          nextDate.setDate(0) // Set to last day of previous month
-        }
-        break
-      case 'custom':
-        if (customDays) {
-          nextDate.setDate(start.getDate() + customDays)
-        }
-        break
-    }
-    
-    // If calculated date is in the past, move it forward
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     
+    // If start date is in the future, use it as the next payment date
+    if (start > today) {
+      const resultYear = start.getFullYear()
+      const resultMonth = String(start.getMonth() + 1).padStart(2, '0')
+      const resultDay = String(start.getDate()).padStart(2, '0')
+      return `${resultYear}-${resultMonth}-${resultDay}`
+    }
+    
+    // Start date is today or in the past - calculate next payment
+    const nextDate = new Date(start)
+    
+    // Keep adding billing cycles until we get a future date
     while (nextDate <= today) {
       switch (billingCycle) {
         case 'weekly':
@@ -222,7 +195,7 @@ export default function SubscriptionForm({
           break
         case 'custom':
           if (customDays) {
-            nextDate.setDate(nextDate.getDate() + customDays)
+            nextDate.setDate(nextDate.getDate() + (customDays - 1))
           }
           break
       }
@@ -660,7 +633,6 @@ export default function SubscriptionForm({
                       {...register('start_date')}
                       type="date"
                       id="start_date"
-                      max={today}
                       className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-all duration-200"
                     />
                   </div>
@@ -671,7 +643,7 @@ export default function SubscriptionForm({
                     </div>
                   ) : (
                     <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      When did this subscription start?
+                      When did/will this subscription start? (past or future)
                     </p>
                   )}
                 </div>
