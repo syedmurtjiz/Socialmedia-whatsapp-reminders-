@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Styles */
+body {
+  @apply text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 transition-colors duration-300;
+}
+
+/* React Select Custom Styles */
+.react-select-container {
+  @apply w-full;
+}
+
+.react-select__control {
+  @apply border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-200;
+}
+
+.react-select__control--is-focused {
+  @apply border-blue-500 dark:border-blue-400 ring-2 ring-blue-500 dark:ring-blue-400 ring-opacity-20 dark:ring-opacity-20;
+}
+
+.react-select__control--menu-is-open {
+  @apply border-blue-500 dark:border-blue-400;
+}
+
+.react-select__menu {
+  @apply bg-white dark:bg-chocolate-800 border border-gray-300 dark:border-chocolate-600 rounded-lg shadow-lg z-50;
+}
+
+.react-select__option {
+  @apply py-2 px-3 text-gray-900 dark:text-chocolate-100 cursor-pointer;
+}
+
+.react-select__option--is-focused {
+  @apply bg-gray-100 dark:bg-chocolate-700;
+}
+
+.react-select__option--is-selected {
+  @apply bg-blue-500 text-white;
+}
+
+.react-select__placeholder {
+  @apply text-gray-400 dark:text-chocolate-400;
+}
+
+.react-select__single-value {
+  @apply text-gray-900 dark:text-chocolate-100;
+}
+
+.react-select__input-container {
+  @apply text-gray-900 dark:text-chocolate-100;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-chocolate-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-chocolate-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-chocolate-500;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .border {
+    @apply border-2;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break-before {
+    break-before: page;
+  }
+  
+  .print-break-after {
+    break-after: page;
+  }
+}
