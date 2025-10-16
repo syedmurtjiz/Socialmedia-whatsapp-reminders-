@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { FiUser, FiBell, FiCreditCard, FiSave, FiCheck, FiAlertCircle, FiX } from 'react-icons/fi'
+import { FiUser, FiBell, FiCreditCard, FiSave, FiCheck, FiAlertCircle, FiX, FiMessageSquare } from 'react-icons/fi'
 import Link from 'next/link'
 import DashboardHeader from '@/components/ui/DashboardHeader'
 import LoadingState from '@/components/ui/LoadingState'
@@ -22,7 +22,8 @@ export default function Settings() {
   const [profileForm, setProfileForm] = useState({
     full_name: '',
     email: '',
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    whatsapp_number: ''
   })
   
   // Notification settings state
@@ -37,7 +38,8 @@ export default function Settings() {
       setProfileForm({
         full_name: user.user_metadata?.full_name || '',
         email: user.email || '',
-        timezone: user.user_metadata?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
+        timezone: user.user_metadata?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+        whatsapp_number: user.user_metadata?.whatsapp_number || ''
       })
     }
   }, [user])
@@ -66,22 +68,12 @@ export default function Settings() {
 
     setSaving(true)
     try {
-      // @ts-ignore - Temporary workaround for Supabase type issues
-      const { error } = await (supabase as any)
-        .from('users')
-        .update({
-          full_name: profileForm.full_name,
-          timezone: profileForm.timezone
-        })
-        .eq('id', user.id)
-
-      if (error) throw error
-
-      // Update auth user metadata
+      // Update auth user metadata (WhatsApp number stored here)
       const { error: authError } = await supabase.auth.updateUser({
         data: {
           full_name: profileForm.full_name,
-          timezone: profileForm.timezone
+          timezone: profileForm.timezone,
+          whatsapp_number: profileForm.whatsapp_number
         }
       })
 
@@ -274,6 +266,27 @@ export default function Settings() {
                       <option value="Europe/London">Europe/London (GMT)</option>
                       <option value="Europe/Paris">Europe/Paris (CET)</option>
                     </select>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="whatsapp_number" className="block text-sm font-medium text-gray-700 dark:text-chocolate-300 mb-1">
+                      <div className="flex items-center">
+                        <FiMessageSquare className="w-4 h-4 mr-2" />
+                        WhatsApp Number (for reminders)
+                      </div>
+                    </label>
+                    <input
+                      type="tel"
+                      name="whatsapp_number"
+                      id="whatsapp_number"
+                      value={profileForm.whatsapp_number}
+                      onChange={handleProfileChange}
+                      placeholder="+1234567890"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-chocolate-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200"
+                    />
+                    <p className="mt-1 text-sm text-gray-500 dark:text-chocolate-400">
+                      This number will be used for all subscription reminders. Include country code (e.g., +1 for US)
+                    </p>
                   </div>
                   
                   <div className="flex justify-end">

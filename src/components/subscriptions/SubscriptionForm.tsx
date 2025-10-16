@@ -75,10 +75,7 @@ const subscriptionSchema = z.object({
     .min(0, 'Cannot be negative')
     .max(30, 'Cannot exceed 30 days')
     .optional(),
-  reminder_time: z.string().optional(),
-  whatsapp_number: z.string()
-    .regex(/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number with country code (e.g., +1234567890)')
-    .optional()
+  reminder_time: z.string().optional()
 }).superRefine((data, ctx) => {
   // Custom cycle days validation
   if (data.billing_cycle === 'custom' && !data.custom_cycle_days) {
@@ -259,8 +256,7 @@ export default function SubscriptionForm({
       description: subscription.description || '',
       bank_id: subscription.bank_id || '',
       reminder_days_before: subscription.reminder_days_before || 3,
-      reminder_time: subscription.reminder_time || '09:00',
-      whatsapp_number: subscription.whatsapp_number || ''
+      reminder_time: subscription.reminder_time || '09:00'
     } : {
       service_name: '',
       cost: 0,
@@ -272,8 +268,7 @@ export default function SubscriptionForm({
       description: '',
       bank_id: '',
       reminder_days_before: 3,
-      reminder_time: '09:00',
-      whatsapp_number: ''
+      reminder_time: '09:00'
     }
   })
 
@@ -772,41 +767,12 @@ export default function SubscriptionForm({
                   <FiBell className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div className="flex items-center justify-between w-full">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-chocolate-100">WhatsApp Reminders</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-chocolate-100">Reminder Settings</h3>
                   <span className="text-sm text-gray-500 dark:text-gray-400">(Optional)</span>
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* WhatsApp Number */}
-                <div>
-                  <label htmlFor="whatsapp_number" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    WhatsApp Number
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiMessageSquare className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      {...register('whatsapp_number')}
-                      type="tel"
-                      id="whatsapp_number"
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-all duration-200"
-                      placeholder="+1234567890"
-                    />
-                  </div>
-                  {errors.whatsapp_number ? (
-                    <div className="mt-2 flex items-center text-sm text-red-600 dark:text-red-400">
-                      <FiAlertCircle className="flex-shrink-0 mr-1.5 h-5 w-5" />
-                      <p>{errors.whatsapp_number.message}</p>
-                    </div>
-                  ) : (
-                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      Include country code (e.g., +1 for US)
-                    </p>
-                  )}
-                </div>
-
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Reminder Days Before */}
                 <div>
                   <label htmlFor="reminder_days_before" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

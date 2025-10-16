@@ -50,6 +50,23 @@ export async function GET() {
 
     // Process each subscription
     for (const subscription of subscriptions) {
+      // Fetch user's WhatsApp number from auth metadata
+      const { data: { user: authUser }, error: userError } = await supabase.auth.admin.getUserById(subscription.user_id)
+      
+      if (userError || !authUser) {
+        results.skipped++
+        continue
+      }
+
+      // Get WhatsApp number from user metadata (set in Settings)
+      const whatsappNumber = authUser.user_metadata?.whatsapp_number
+      
+      // Skip if user hasn't set WhatsApp number in Settings
+      if (!whatsappNumber) {
+        results.skipped++
+        continue
+      }
+
       const paymentDate = new Date(subscription.next_payment_date)
       paymentDate.setHours(0, 0, 0, 0)
       
@@ -100,7 +117,7 @@ export async function GET() {
               },
               body: JSON.stringify({
                 messaging_product: 'whatsapp',
-                to: subscription.whatsapp_number,
+                to: whatsappNumber,
                 type: 'text',
                 text: { body: message },
               }),
@@ -127,7 +144,7 @@ export async function GET() {
                 type: 'whatsapp_reminder',
                 title: `Reminder: ${subscription.service_name || subscription.name}`,
                 message: message,
-                whatsapp_number: subscription.whatsapp_number,
+                whatsapp_number: whatsappNumber,
                 whatsapp_message_id: whatsappData.messages?.[0]?.id || null,
                 status: 'sent',
                 scheduled_at: new Date().toISOString(),
@@ -146,7 +163,7 @@ export async function GET() {
                 type: 'whatsapp_reminder',
                 title: `Failed: ${subscription.service_name || subscription.name}`,
                 message: message,
-                whatsapp_number: subscription.whatsapp_number,
+                whatsapp_number: whatsappNumber,
                 status: 'failed',
                 error_message: `WhatsApp API error: ${whatsappResponse.status} - ${JSON.stringify(whatsappData)}`,
                 scheduled_at: new Date().toISOString()
