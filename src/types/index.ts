@@ -77,6 +77,7 @@ export interface Subscription {
   // WhatsApp Reminder fields
   reminder_days_before?: number
   reminder_time?: string
+  whatsapp_number?: string
   last_reminder_sent?: string
   created_at: string
   updated_at: string
@@ -104,6 +105,7 @@ export interface CreateSubscriptionForm {
   // WhatsApp Reminder fields
   reminder_days_before?: number
   reminder_time?: string
+  whatsapp_number?: string
 }
 
 export interface CreateCategoryForm {
@@ -115,7 +117,6 @@ export interface CreateCategoryForm {
 export interface UpdateProfileForm {
   full_name: string
   timezone: string
-  whatsapp_number?: string
 }
 
 // Analytics types
