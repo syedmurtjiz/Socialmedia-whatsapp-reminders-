@@ -56,6 +56,10 @@ export async function POST() {
     // Send WhatsApp message for each subscription
     for (const subscription of subscriptions) {
       try {
+        // Get bank name if available
+        const bankName = (subscription as any).banks?.name
+        const bankInfo = bankName ? ` (${bankName})` : ''
+        
         const response = await fetch(
           `https://graph.facebook.com/v19.0/${process.env.META_PHONE_NUMBER_ID}/messages`,
           {
@@ -69,7 +73,7 @@ export async function POST() {
               to: whatsappNumber,
               type: 'text',
               text: {
-                body: `🔔 Reminder: Your ${subscription.service_name} subscription renews on ${new Date(subscription.next_payment_date).toLocaleDateString()}. Don't forget to review or cancel if needed!`,
+                body: `🔔 Reminder: Your ${subscription.service_name}${bankInfo} subscription renews on ${new Date(subscription.next_payment_date).toLocaleDateString()}. Don't forget to review or cancel if needed!`,
               },
             }),
           }

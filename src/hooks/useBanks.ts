@@ -11,18 +11,12 @@ export function useBanks(): { banks: Bank[]; loading: boolean; error: Error | nu
 
   useEffect(() => {
     const fetchBanks = async () => {
-      if (!user) {
-        setBanks([]);
-        setLoading(false);
-        return;
-      }
-
       try {
         setLoading(true);
+        // Fetch shared banks (no user_id filter needed)
         const { data, error: fetchError } = await supabase
           .from('banks')
           .select('*')
-          .eq('user_id', user.id)
           .order('name', { ascending: true });
 
         if (fetchError) throw fetchError;
@@ -36,7 +30,7 @@ export function useBanks(): { banks: Bank[]; loading: boolean; error: Error | nu
     };
 
     fetchBanks();
-  }, [user]);
+  }, []);
 
   return { banks, loading, error };
 }

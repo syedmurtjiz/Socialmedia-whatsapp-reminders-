@@ -56,12 +56,24 @@ export async function POST(
       (paymentDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
     )
 
+    // Get bank name if available (fetch separately since banks are now shared)
+    let bankName: string | undefined
+    if (subscription.bank_id) {
+      const { data: bankData } = await supabase
+        .from('banks')
+        .select('name')
+        .eq('id', subscription.bank_id)
+        .single()
+      bankName = bankData?.name
+    }
+    const bankInfo = bankName ? ` (${bankName})` : ''
+    
     // Create reminder message
     const message = daysUntilPayment === 0
-      ? `🔔 Reminder: Your ${subscription.service_name} subscription payment is due TODAY! Don't forget to review or cancel if needed.`
+      ? `🔔 Reminder: Your ${subscription.service_name}${bankInfo} subscription payment is due TODAY! Don't forget to review or cancel if needed.`
       : daysUntilPayment === 1
-      ? `🔔 Reminder: Your ${subscription.service_name} subscription payment is due TOMORROW! Don't forget to review or cancel if needed.`
-      : `🔔 Reminder: Your ${subscription.service_name} subscription payment is due in ${daysUntilPayment} days! Don't forget to review or cancel if needed.`
+      ? `🔔 Reminder: Your ${subscription.service_name}${bankInfo} subscription payment is due TOMORROW! Don't forget to review or cancel if needed.`
+      : `🔔 Reminder: Your ${subscription.service_name}${bankInfo} subscription payment is due in ${daysUntilPayment} days! Don't forget to review or cancel if needed.`
 
     // Send WhatsApp message
     const response = await fetch(

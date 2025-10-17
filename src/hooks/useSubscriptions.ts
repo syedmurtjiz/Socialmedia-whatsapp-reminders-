@@ -17,10 +17,7 @@ export function useSubscriptions() {
       setLoading(true)
       const { data, error } = await supabase
         .from('subscriptions')
-        .select(`
-          *,
-          bank:banks(*)
-        `)
+        .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
 
@@ -79,10 +76,7 @@ export function useSubscriptions() {
       const { data, error } = await (supabase as any)
         .from('subscriptions')
         .insert([insertData])
-        .select(`
-          *,
-          bank:banks(*)
-        `)
+        .select('*')
         .single()
 
       if (error) {
@@ -152,10 +146,7 @@ export function useSubscriptions() {
         .update(normalizedUpdates)
         .eq('id', id)
         .eq('user_id', user.id)
-        .select(`
-          *,
-          bank:banks(*)
-        `)
+        .select('*')
         .single()
 
       if (error) {

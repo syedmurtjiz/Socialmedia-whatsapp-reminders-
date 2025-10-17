@@ -24,6 +24,7 @@ export async function GET() {
     today.setHours(0, 0, 0, 0)
 
     // Query ACTIVE subscriptions only (bypasses RLS with service role)
+    // Get active subscriptions
     const { data: subscriptions, error } = await supabase
       .from('subscriptions')
       .select('*')
@@ -98,12 +99,16 @@ export async function GET() {
       // Send reminder if within the reminder window
       if (daysUntilPayment === subscription.reminder_days_before) {
         try {
+          // Get bank name if available
+          const bankName = (subscription as any).banks?.name
+          const bankInfo = bankName ? ` (${bankName})` : ''
+          
           // Send WhatsApp message directly
           const message = daysUntilPayment === 0
-            ? `🔔 Reminder: Your ${subscription.service_name} subscription payment is due TODAY! Don't forget to review or cancel if needed.`
+            ? `🔔 Reminder: Your ${subscription.service_name}${bankInfo} subscription payment is due TODAY! Don't forget to review or cancel if needed.`
             : daysUntilPayment === 1
-            ? `🔔 Reminder: Your ${subscription.service_name} subscription payment is due TOMORROW! Don't forget to review or cancel if needed.`
-            : `🔔 Reminder: Your ${subscription.service_name} subscription payment is due in ${daysUntilPayment} days! Don't forget to review or cancel if needed.`
+            ? `🔔 Reminder: Your ${subscription.service_name}${bankInfo} subscription payment is due TOMORROW! Don't forget to review or cancel if needed.`
+            : `🔔 Reminder: Your ${subscription.service_name}${bankInfo} subscription payment is due in ${daysUntilPayment} days! Don't forget to review or cancel if needed.`
 
           const whatsappResponse = await fetch(
             `https://graph.facebook.com/v19.0/${process.env.META_PHONE_NUMBER_ID}/messages`,
