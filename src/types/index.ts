@@ -49,8 +49,8 @@ export interface Notification {
 }
 
 export type BillingCycle = 'monthly' | 'yearly' | 'weekly' | 'custom'
-export type SubscriptionStatus = 'active' | 'inactive' | 'cancelled'
-export type Currency = 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD'
+export type SubscriptionStatus = 'active' | 'inactive' | 'cancelled' | 'paused'
+export type Currency = 'PKR' | 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD'
 export type NotificationType = 'whatsapp_reminder' | 'email_reminder' | 'system'
 export type NotificationStatus = 'pending' | 'sent' | 'failed' | 'read'
 
