@@ -23,6 +23,8 @@ interface Subscription {
   reminder_time: string
   whatsapp_number: string
   last_reminder_sent: string | null
+  website_url?: string
+  bank_id?: string
 }
 
 interface ReminderResult {
@@ -137,10 +139,14 @@ async function sendWhatsAppMessage(
 }
 
 /**
- * Create reminder message
+ * Create reminder message with bank name and website
  */
-function createReminderMessage(subscription: Subscription, daysUntilPayment: number): string {
-  const { service_name, cost, currency, next_payment_date } = subscription
+function createReminderMessage(
+  subscription: Subscription, 
+  daysUntilPayment: number, 
+  bankName?: string
+): string {
+  const { service_name, cost, currency, next_payment_date, website_url } = subscription
   
   const formattedCost = formatCurrency(cost, currency)
   const formattedDate = new Date(next_payment_date).toLocaleDateString('en-PK', {
@@ -149,13 +155,31 @@ function createReminderMessage(subscription: Subscription, daysUntilPayment: num
     day: 'numeric'
   })
   
+  // Build the base message
+  let message = `🔔 *Payment Reminder*\n\n`
+  message += `Your *${service_name}* subscription payment of *${formattedCost}* is due `
+  
   if (daysUntilPayment === 0) {
-    return `🔔 *Payment Reminder*\n\nYour *${service_name}* subscription payment of *${formattedCost}* is due *TODAY* (${formattedDate}).\n\nPlease ensure sufficient funds are available.`
+    message += `*TODAY* (${formattedDate}).`
   } else if (daysUntilPayment === 1) {
-    return `🔔 *Payment Reminder*\n\nYour *${service_name}* subscription payment of *${formattedCost}* is due *TOMORROW* (${formattedDate}).\n\nPlease ensure sufficient funds are available.`
+    message += `*TOMORROW* (${formattedDate}).`
   } else {
-    return `🔔 *Payment Reminder*\n\nYour *${service_name}* subscription payment of *${formattedCost}* is due in *${daysUntilPayment} days* (${formattedDate}).\n\nPlease ensure sufficient funds are available.`
+    message += `in *${daysUntilPayment} days* (${formattedDate}).`
   }
+  
+  // Add bank information if available
+  if (bankName) {
+    message += `\n\n💳 *Payment Method:* ${bankName}`
+  }
+  
+  // Add website link if available
+  if (website_url) {
+    message += `\n🌐 *Website:* ${website_url}`
+  }
+  
+  message += `\n\n✅ Please ensure sufficient funds are available.`
+  
+  return message
 }
 
 // ============================================
@@ -340,9 +364,25 @@ serve(async (req) => {
       
       console.log(`  - Days until payment: ${daysUntilPayment}`)
       
+      // Fetch bank name if bank_id exists
+      let bankName: string | undefined
+      if (subscription.bank_id) {
+        const { data: bankData } = await supabase
+          .from('banks')
+          .select('name')
+          .eq('id', subscription.bank_id)
+          .single()
+        
+        bankName = bankData?.name
+        console.log(`  - Bank: ${bankName || 'Not specified'}`)
+      }
+      
       // Create and send reminder message
-      const message = createReminderMessage(subscription, daysUntilPayment)
+      const message = createReminderMessage(subscription, daysUntilPayment, bankName)
       console.log(`  📤 Sending reminder message...`)
+      if (subscription.website_url) {
+        console.log(`  - Website: ${subscription.website_url}`)
+      }
       
       const result = await sendWhatsAppMessage(
         whatsappNumber,
