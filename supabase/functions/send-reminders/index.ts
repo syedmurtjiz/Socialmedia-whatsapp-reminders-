@@ -393,12 +393,6 @@ serve(async (req) => {
       
       if (result.success) {
         console.log(`  ✅ Reminder sent successfully`)
-        results.sent++
-        results.details.push({
-          subscription_id: subscription.id,
-          service_name: subscription.service_name,
-          status: 'sent'
-        })
         
         // Update last_reminder_sent timestamp
         const { error: updateError } = await supabase
@@ -407,10 +401,34 @@ serve(async (req) => {
           .eq('id', subscription.id)
         
         if (updateError) {
-          console.error(`  ⚠️ Failed to update last_reminder_sent:`, updateError)
-        } else {
-          console.log(`  ✅ Updated last_reminder_sent timestamp`)
+          console.error(`  ⚠️ Error updating last_reminder_sent:`, updateError)
         }
+        
+        // Create web notification for the user
+        const { error: notificationError } = await supabase
+          .from('notifications')
+          .insert({
+            user_id: subscription.user_id,
+            subscription_id: subscription.id,
+            type: 'whatsapp_reminder',
+            title: 'WhatsApp Reminder Sent',
+            message: message,
+            status: 'sent',
+            created_at: new Date().toISOString()
+          })
+        
+        if (notificationError) {
+          console.error(`  ⚠️ Error creating notification:`, notificationError)
+        } else {
+          console.log(`  📬 Web notification created`)
+        }
+        
+        results.sent++
+        results.details.push({
+          subscription_id: subscription.id,
+          service_name: subscription.service_name,
+          status: 'sent'
+        })
       } else {
         console.log(`  ❌ Failed to send reminder: ${result.error}`)
         results.failed++
