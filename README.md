@@ -1,6 +1,14 @@
-# Subscription Tracker
+# 📱 Subscription Tracker
 
-A comprehensive subscription management application that helps users track, manage, and optimize their online subscriptions with intelligent alerts and detailed cost analysis.
+A comprehensive subscription management application with WhatsApp reminders, web notifications, and detailed cost analysis for Pakistan.
+
+---
+
+## 📚 **Complete Documentation**
+
+**👉 See [DOCUMENTATION.md](./DOCUMENTATION.md) for full setup guide, features, and troubleshooting.**
+
+---
 
 ## 🌟 Features
 
