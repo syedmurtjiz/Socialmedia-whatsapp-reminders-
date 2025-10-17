@@ -10,6 +10,15 @@ export interface User {
   timezone: string
 }
 
+export interface UserProfile {
+  id: string
+  whatsapp_number?: string
+  reminder_time?: string
+  timezone: string
+  created_at: string
+  updated_at: string
+}
+
 export interface Category {
   id: string
   user_id: string

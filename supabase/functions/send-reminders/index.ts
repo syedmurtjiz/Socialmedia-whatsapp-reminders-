@@ -191,15 +191,11 @@ serve(async (req) => {
     
     // Query subscriptions that need reminders
     // 1. Only active subscriptions
-    // 2. Calculate reminder date (next_payment_date - reminder_days_before)
-    // 3. Check if reminder_time matches current Pakistan time
-    // 4. Check if reminder not already sent today
+    // 2. We'll get user_profiles separately since there's no foreign key
     const { data: subscriptions, error } = await supabase
       .from('subscriptions')
       .select('*')
       .eq('status', 'active')
-      .not('whatsapp_number', 'is', null)
-      .not('whatsapp_number', 'eq', '')
     
     if (error) {
       console.error('❌ Error fetching subscriptions:', error)
@@ -240,12 +236,48 @@ serve(async (req) => {
         subscription.reminder_days_before
       )
       
+      // Get user profile to fetch WhatsApp number
+      const { data: userProfile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('whatsapp_number')
+        .eq('id', subscription.user_id)
+        .single()
+      
+      if (profileError) {
+        console.log(`  ⏭️ Skipping - error fetching user profile: ${profileError.message}`)
+        results.skipped++
+        results.details.push({
+          subscription_id: subscription.id,
+          service_name: subscription.service_name,
+          status: 'skipped',
+          reason: 'Error fetching user profile'
+        })
+        continue
+      }
+      
+      const whatsappNumber = userProfile?.whatsapp_number
+      const reminderTime = subscription.reminder_time || '09:00:00'
+      
+      // Skip if no WhatsApp number in user profile
+      if (!whatsappNumber) {
+        console.log(`  ⏭️ Skipping - no WhatsApp number in user settings`)
+        results.skipped++
+        results.details.push({
+          subscription_id: subscription.id,
+          service_name: subscription.service_name,
+          status: 'skipped',
+          reason: 'No WhatsApp number in user settings'
+        })
+        continue
+      }
+      
       console.log(`  - Next payment: ${subscription.next_payment_date}`)
       console.log(`  - Reminder days before: ${subscription.reminder_days_before}`)
       console.log(`  - Calculated reminder date: ${reminderDate}`)
       console.log(`  - Current Pakistan date: ${pakistanTime.dateString}`)
-      console.log(`  - Reminder time: ${subscription.reminder_time}`)
+      console.log(`  - Reminder time: ${reminderTime}`)
       console.log(`  - Current Pakistan time: ${pakistanTime.timeString}`)
+      console.log(`  - WhatsApp number: ${whatsappNumber}`)
       
       // Check if today is the reminder date
       if (reminderDate !== pakistanTime.dateString) {
@@ -261,7 +293,7 @@ serve(async (req) => {
       }
       
       // Parse reminder time (format: HH:MM:SS or HH:MM)
-      const [reminderHour, reminderMinute] = subscription.reminder_time.split(':').map(Number)
+      const [reminderHour, reminderMinute] = reminderTime.split(':').map(Number)
       
       console.log(`  - Reminder hour: ${reminderHour}, minute: ${reminderMinute}`)
       console.log(`  - Current hour: ${pakistanTime.hour}, minute: ${pakistanTime.minute}`)
@@ -313,7 +345,7 @@ serve(async (req) => {
       console.log(`  📤 Sending reminder message...`)
       
       const result = await sendWhatsAppMessage(
-        subscription.whatsapp_number,
+        whatsappNumber,
         message,
         metaAccessToken,
         metaPhoneNumberId

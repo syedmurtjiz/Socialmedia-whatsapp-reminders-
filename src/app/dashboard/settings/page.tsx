@@ -28,7 +28,8 @@ export default function Settings() {
   // Notification settings state
   const [notificationSettings, setNotificationSettings] = useState({
     email_notifications: true,
-    push_notifications: true
+    push_notifications: true,
+    whatsapp_number: ''
   })
 
   // Initialize form data
@@ -39,8 +40,30 @@ export default function Settings() {
         email: user.email || '',
         timezone: user.user_metadata?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
       })
+      loadWhatsAppNumber()
     }
   }, [user])
+
+  // Load WhatsApp number from user_profiles
+  const loadWhatsAppNumber = async () => {
+    if (!user) return
+    try {
+      const { data, error } = await (supabase as any)
+        .from('user_profiles')
+        .select('whatsapp_number')
+        .eq('id', user.id)
+        .single()
+
+      if (data && !error) {
+        setNotificationSettings(prev => ({
+          ...prev,
+          whatsapp_number: data.whatsapp_number || ''
+        }))
+      }
+    } catch (error) {
+      console.error('Error loading WhatsApp number:', error)
+    }
+  }
 
   // Handle profile form changes
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -53,11 +76,57 @@ export default function Settings() {
 
   // Handle notification settings changes
   const handleNotificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target
+    const { name, type, checked, value } = e.target
     setNotificationSettings(prev => ({
       ...prev,
-      [name]: checked
+      [name]: type === 'checkbox' ? checked : value
     }))
+  }
+
+  // Save WhatsApp number
+  const saveWhatsAppNumber = async () => {
+    if (!user) return
+
+    setSaving(true)
+    try {
+      // Validate WhatsApp number format
+      if (notificationSettings.whatsapp_number && !/^\+\d{10,15}$/.test(notificationSettings.whatsapp_number)) {
+        setModalContent({
+          title: 'Invalid Format',
+          message: 'WhatsApp number must start with + and contain 10-15 digits (e.g., +923001234567)',
+          type: 'error'
+        })
+        setShowModal(true)
+        setSaving(false)
+        return
+      }
+
+      const { error } = await (supabase as any)
+        .from('user_profiles')
+        .upsert({
+          id: user.id,
+          whatsapp_number: notificationSettings.whatsapp_number || null,
+          timezone: profileForm.timezone
+        })
+
+      if (error) throw error
+
+      setModalContent({
+        title: 'Success',
+        message: 'WhatsApp number updated successfully',
+        type: 'success'
+      })
+      setShowModal(true)
+    } catch (error: any) {
+      setModalContent({
+        title: 'Error',
+        message: error.message || 'Failed to update WhatsApp number',
+        type: 'error'
+      })
+      setShowModal(true)
+    } finally {
+      setSaving(false)
+    }
   }
 
   // Save profile changes
@@ -305,6 +374,46 @@ export default function Settings() {
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-chocolate-100 mb-6">Notification Preferences</h3>
                 
                 <div className="space-y-6">
+                  {/* WhatsApp Number */}
+                  <div className="p-4 border border-gray-200 dark:border-chocolate-700 rounded-lg">
+                    <div>
+                      <h4 className="font-medium text-gray-900 dark:text-chocolate-100 mb-2">WhatsApp Reminders</h4>
+                      <p className="text-sm text-gray-500 dark:text-chocolate-400 mb-4">
+                        Enter your WhatsApp number to receive subscription reminders
+                      </p>
+                      <div className="flex gap-4">
+                        <input
+                          type="tel"
+                          name="whatsapp_number"
+                          value={notificationSettings.whatsapp_number}
+                          onChange={handleNotificationChange}
+                          placeholder="+923001234567"
+                          className="flex-1 px-4 py-2 border border-gray-300 dark:border-chocolate-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200"
+                        />
+                        <button
+                          onClick={saveWhatsAppNumber}
+                          disabled={saving}
+                          className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center disabled:opacity-50"
+                        >
+                          {saving ? (
+                            <>
+                              <div className="animate-spin rounded-full border-2 border-gray-300 dark:border-gray-600 border-t-blue-600 dark:border-t-blue-400 w-4 h-4 mr-2"></div>
+                              Saving...
+                            </>
+                          ) : (
+                            <>
+                              <FiSave className="w-4 h-4 mr-2" />
+                              Save
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-chocolate-400 mt-2">
+                        Format: +92 followed by 10 digits. This number will be used for all subscription reminders.
+                      </p>
+                    </div>
+                  </div>
+
                   <div className="p-4 border border-gray-200 dark:border-chocolate-700 rounded-lg">
                     <div className="flex items-center justify-between">
                       <div>
