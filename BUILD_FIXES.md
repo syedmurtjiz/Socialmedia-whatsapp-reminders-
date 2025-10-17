@@ -34,11 +34,18 @@
 - Added validation to ensure WhatsApp number is configured before sending
 - Skip subscriptions if user hasn't set up WhatsApp number
 
+### 4. ✅ Async Supabase Client
+**File**: `src/app/api/fix-duplicate-banks/route.ts`
+- **Problem**: Missing `await` on `createClient()` call
+- **Error**: `Property 'from' does not exist on type 'Promise<SupabaseClient>'`
+- **Solution**: Changed `const supabase = createClient()` → `const supabase = await createClient()`
+
 ## Files Modified
 
 1. **src/app/api/send-reminder/[id]/route.ts** - Created from scratch (125 lines)
-2. **src/app/api/cron/send-reminders/route.ts** - Fixed field names
+2. **src/app/api/cron/send-reminders/route.ts** - Fixed field names + WhatsApp source
 3. **src/app/api/test-reminder/route.ts** - Fixed field names + WhatsApp source
+4. **src/app/api/fix-duplicate-banks/route.ts** - Fixed async client creation
 
 ## Database Schema Alignment
 

@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 // This API route removes duplicate banks from the database
 export async function POST() {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     
     // Get all banks ordered by name
     const { data: banks, error: fetchError } = await supabase
