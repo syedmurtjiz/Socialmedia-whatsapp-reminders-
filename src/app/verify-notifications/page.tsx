@@ -3,11 +3,29 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 
+interface VerificationResult {
+  success: boolean
+  message: string
+  count?: number
+  error?: string
+}
+
+interface CreationResult {
+  success: boolean
+  message: string
+  notification?: {
+    id: string
+    title: string
+    message: string
+  }
+  error?: string
+}
+
 export default function VerifyNotifications() {
   const { user } = useAuth()
-  const [verificationResult, setVerificationResult] = useState(null)
+  const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null)
   const [creatingNotification, setCreatingNotification] = useState(false)
-  const [creationResult, setCreationResult] = useState(null)
+  const [creationResult, setCreationResult] = useState<CreationResult | null>(null)
   const [loading, setLoading] = useState(false)
 
   const verifyNotifications = async () => {
@@ -22,7 +40,7 @@ export default function VerifyNotifications() {
       
       const result = await response.json()
       setVerificationResult(result)
-    } catch (error) {
+    } catch (error: any) {
       setVerificationResult({ 
         success: false, 
         error: error.message,
@@ -52,7 +70,7 @@ export default function VerifyNotifications() {
       
       const result = await response.json()
       setCreationResult(result)
-    } catch (error) {
+    } catch (error: any) {
       setCreationResult({ 
         success: false, 
         error: error.message,

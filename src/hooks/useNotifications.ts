@@ -43,7 +43,7 @@ export function useNotifications() {
     if (!user) return
 
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('notifications')
         .update({ 
           status: 'read',
@@ -71,7 +71,7 @@ export function useNotifications() {
     if (!user) return
 
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('notifications')
         .update({ 
           status: 'read',

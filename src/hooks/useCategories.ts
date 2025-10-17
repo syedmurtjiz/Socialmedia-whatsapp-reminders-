@@ -47,7 +47,7 @@ export function useCategories() {
       }
       
       // @ts-ignore - Temporary workaround for Supabase type issues
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('categories')
         .insert([insertData])
         .select()
@@ -74,7 +74,7 @@ export function useCategories() {
 
     try {
       // @ts-ignore - Temporary workaround for Supabase type issues
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('categories')
         .update(updates)
         .eq('id', id)
