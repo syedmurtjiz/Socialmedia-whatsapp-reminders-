@@ -11,6 +11,22 @@ export async function POST() {
   }
 
   try {
+    // Get user profile for WhatsApp number
+    const { data: userProfile } = await supabase
+      .from('user_profiles')
+      .select('whatsapp_number')
+      .eq('id', user.id)
+      .single()
+
+    const whatsappNumber = userProfile?.whatsapp_number
+
+    if (!whatsappNumber) {
+      return NextResponse.json(
+        { error: 'WhatsApp number not configured in settings' },
+        { status: 400 }
+      )
+    }
+
     // Get all subscriptions created OR updated in the last 5 minutes
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
     
@@ -50,10 +66,10 @@ export async function POST() {
             },
             body: JSON.stringify({
               messaging_product: 'whatsapp',
-              to: subscription.whatsapp_number,
+              to: whatsappNumber,
               type: 'text',
               text: {
-                body: `🔔 Reminder: Your ${subscription.name} subscription renews on ${new Date(subscription.next_payment_date).toLocaleDateString()}. Don't forget to review or cancel if needed!`,
+                body: `🔔 Reminder: Your ${subscription.service_name} subscription renews on ${new Date(subscription.next_payment_date).toLocaleDateString()}. Don't forget to review or cancel if needed!`,
               },
             }),
           }
@@ -75,7 +91,7 @@ export async function POST() {
       message: 'Test reminders processed',
       results,
       subscriptions: subscriptions.map((s: any) => ({
-        name: s.name,
+        service_name: s.service_name,
         created_at: s.created_at,
       })),
     })

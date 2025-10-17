@@ -50,6 +50,21 @@ export async function GET() {
 
     // Process each subscription
     for (const subscription of subscriptions) {
+      // Get user profile for WhatsApp number
+      const { data: userProfile } = await supabase
+        .from('user_profiles')
+        .select('whatsapp_number')
+        .eq('id', subscription.user_id)
+        .single()
+
+      const whatsappNumber = userProfile?.whatsapp_number
+
+      // Skip if no WhatsApp number configured
+      if (!whatsappNumber) {
+        results.skipped++
+        continue
+      }
+
       const paymentDate = new Date(subscription.next_payment_date)
       paymentDate.setHours(0, 0, 0, 0)
       
@@ -85,10 +100,10 @@ export async function GET() {
         try {
           // Send WhatsApp message directly
           const message = daysUntilPayment === 0
-            ? `🔔 Reminder: Your ${subscription.name} subscription payment is due TODAY! Don't forget to review or cancel if needed.`
+            ? `🔔 Reminder: Your ${subscription.service_name} subscription payment is due TODAY! Don't forget to review or cancel if needed.`
             : daysUntilPayment === 1
-            ? `🔔 Reminder: Your ${subscription.name} subscription payment is due TOMORROW! Don't forget to review or cancel if needed.`
-            : `🔔 Reminder: Your ${subscription.name} subscription payment is due in ${daysUntilPayment} days! Don't forget to review or cancel if needed.`
+            ? `🔔 Reminder: Your ${subscription.service_name} subscription payment is due TOMORROW! Don't forget to review or cancel if needed.`
+            : `🔔 Reminder: Your ${subscription.service_name} subscription payment is due in ${daysUntilPayment} days! Don't forget to review or cancel if needed.`
 
           const whatsappResponse = await fetch(
             `https://graph.facebook.com/v19.0/${process.env.META_PHONE_NUMBER_ID}/messages`,
@@ -100,7 +115,7 @@ export async function GET() {
               },
               body: JSON.stringify({
                 messaging_product: 'whatsapp',
-                to: subscription.whatsapp_number,
+                to: whatsappNumber,
                 type: 'text',
                 text: { body: message },
               }),
@@ -125,9 +140,9 @@ export async function GET() {
                 user_id: subscription.user_id,
                 subscription_id: subscription.id,
                 type: 'whatsapp_reminder',
-                title: `Reminder: ${subscription.service_name || subscription.name}`,
+                title: `Reminder: ${subscription.service_name}`,
                 message: message,
-                whatsapp_number: subscription.whatsapp_number,
+                whatsapp_number: whatsappNumber,
                 whatsapp_message_id: whatsappData.messages?.[0]?.id || null,
                 status: 'sent',
                 scheduled_at: new Date().toISOString(),
@@ -144,9 +159,9 @@ export async function GET() {
                 user_id: subscription.user_id,
                 subscription_id: subscription.id,
                 type: 'whatsapp_reminder',
-                title: `Failed: ${subscription.service_name || subscription.name}`,
+                title: `Failed: ${subscription.service_name}`,
                 message: message,
-                whatsapp_number: subscription.whatsapp_number,
+                whatsapp_number: whatsappNumber,
                 status: 'failed',
                 error_message: `WhatsApp API error: ${whatsappResponse.status} - ${JSON.stringify(whatsappData)}`,
                 scheduled_at: new Date().toISOString()
