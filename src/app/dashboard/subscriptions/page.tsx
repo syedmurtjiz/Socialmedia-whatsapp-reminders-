@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useSubscriptions } from '@/hooks/useSubscriptions'
-import { useCategories } from '@/hooks/useCategories'
 import { useBanks } from '@/hooks/useBanks'
 import { Subscription, CreateSubscriptionForm } from '@/types'
 import SubscriptionForm from '@/components/subscriptions/SubscriptionForm'
@@ -31,7 +30,6 @@ export default function SubscriptionsPage() {
     deleteSubscription, 
     toggleSubscriptionStatus 
   } = useSubscriptions()
-  const { categories } = useCategories()
   const { banks } = useBanks()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -39,7 +37,6 @@ export default function SubscriptionsPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filterCategory, setFilterCategory] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
   const [sortBy, setSortBy] = useState<'name' | 'cost' | 'next_payment' | 'created'>('created')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
@@ -117,10 +114,9 @@ export default function SubscriptionsPage() {
     .filter(sub => {
       const matchesSearch = sub.service_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            (sub.description && sub.description.toLowerCase().includes(searchTerm.toLowerCase()))
-      const matchesCategory = !filterCategory || sub.category_id === filterCategory
       const matchesStatus = filterStatus === 'all' || sub.status === filterStatus
       
-      return matchesSearch && matchesCategory && matchesStatus
+      return matchesSearch && matchesStatus
     })
     .sort((a, b) => {
       let aValue: any, bValue: any
@@ -194,7 +190,7 @@ export default function SubscriptionsPage() {
 
         {/* Filters and Search */}
         <div className="bg-white dark:bg-chocolate-900 rounded-xl shadow-lg dark:shadow-2xl p-6 mb-6 transition-colors duration-300">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Search */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -208,20 +204,6 @@ export default function SubscriptionsPage() {
                 className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200"
               />
             </div>
-
-            {/* Category Filter */}
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200"
-            >
-              <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.icon} {category.name}
-                </option>
-              ))}
-            </select>
 
             {/* Status Filter */}
             <select
@@ -290,14 +272,12 @@ export default function SubscriptionsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredSubscriptions.map((subscription) => {
-              const category = categories.find(cat => cat.id === subscription.category_id) || null
               const bank = subscription.bank || banks.find(b => b.id === subscription.bank_id) || null
 
               return (
                 <SubscriptionCard
                   key={subscription.id}
                   subscription={subscription}
-                  category={category}
                   bank={bank}
                   onEdit={handleEdit}
                   onDelete={handleDelete}

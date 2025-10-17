@@ -1,10 +1,9 @@
 import { FiCalendar, FiCreditCard, FiEdit2, FiExternalLink, FiPause, FiPlay, FiTrash2 } from 'react-icons/fi'
-import { Subscription, Category, Bank } from '@/types'
+import { Subscription, Bank } from '@/types'
 import { formatCurrency, formatDatePakistani as formatDate, getDaysUntilPayment, getBillingCycleText } from '@/utils'
 
 interface SubscriptionCardProps {
   subscription: Subscription
-  category?: Category | null
   bank?: Bank | null
   onEdit: (subscription: Subscription) => void
   onDelete: (subscription: Subscription) => void
@@ -13,7 +12,6 @@ interface SubscriptionCardProps {
 
 export default function SubscriptionCard({
   subscription,
-  category,
   bank,
   onEdit,
   onDelete,
@@ -30,35 +28,19 @@ export default function SubscriptionCard({
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
-          {category ? (
-            <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-md"
-              style={{ backgroundColor: category.color }}
-            >
-              {category.icon}
-            </div>
-          ) : (
-            <div className="w-12 h-12 rounded-xl bg-gray-200 dark:bg-chocolate-800 flex items-center justify-center text-gray-500 dark:text-chocolate-400 text-xl">
-              ?
-            </div>
-          )}
+          <div className="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-400 text-xl font-bold">
+            {subscription.service_name.charAt(0).toUpperCase()}
+          </div>
           <div>
             <h3 className="font-bold text-gray-900 dark:text-chocolate-100 text-lg leading-tight">
               {subscription.service_name}
             </h3>
-            <div className="mt-1 space-y-1">
-              {category && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-chocolate-800 text-gray-800 dark:text-chocolate-200">
-                  {category.name}
-                </span>
-              )}
-              {bank && (
-                <div className="flex items-center text-xs text-gray-500 dark:text-chocolate-400 mt-1">
-                  <FiCreditCard className="w-3.5 h-3.5 mr-1.5" />
-                  <span className="font-medium">{bank.name}</span>
-                </div>
-              )}
-            </div>
+            {bank && (
+              <div className="flex items-center text-xs text-gray-500 dark:text-chocolate-400 mt-1">
+                <FiCreditCard className="w-3.5 h-3.5 mr-1.5" />
+                <span className="font-medium">{bank.name}</span>
+              </div>
+            )}
           </div>
         </div>
         

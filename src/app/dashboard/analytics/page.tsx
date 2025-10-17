@@ -35,26 +35,6 @@ export default function Analytics() {
   const monthlyTotal = getTotalMonthlyCost()
   const yearlyTotal = getTotalYearlyCost()
 
-  // Group subscriptions by category for pie chart data
-  const categoryBreakdown = activeSubscriptions.reduce((acc, sub) => {
-    const categoryName = sub.category?.name || 'Other'
-    if (!acc[categoryName]) {
-      acc[categoryName] = { count: 0, total: 0 }
-    }
-    acc[categoryName].count++
-    
-    // Convert to monthly cost for consistent comparison
-    let monthlyCost = sub.cost
-    if (sub.billing_cycle === 'yearly') {
-      monthlyCost = sub.cost / 12
-    } else if (sub.billing_cycle === 'weekly') {
-      monthlyCost = sub.cost * 4.33
-    }
-    
-    acc[categoryName].total += monthlyCost
-    return acc
-  }, {} as Record<string, { count: number; total: number }>)
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-chocolate-950 transition-colors duration-300">
       {/* Header */}
@@ -101,126 +81,8 @@ export default function Analytics() {
           />
         </div>
 
-        {/* Enhanced Category Breakdown */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Category Pie Chart */}
-          <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300">
-            <div className="p-6 border-b border-gray-200 dark:border-chocolate-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-chocolate-100">Spending by Category</h3>
-            </div>
-            <div className="p-6">
-              {Object.keys(categoryBreakdown).length > 0 ? (
-                <div className="flex items-center justify-center">
-                  {/* Pie Chart Container */}
-                  <div className="relative w-48 h-48">
-                    {(() => {
-                      const categories = Object.entries(categoryBreakdown).sort(([,a], [,b]) => b.total - a.total)
-                      const total = categories.reduce((sum, [, data]) => sum + data.total, 0)
-                      let cumulativePercentage = 0
-                      const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#06B6D4', '#84CC16', '#6B7280']
-                      
-                      return (
-                        <>
-                          <svg className="w-48 h-48 transform -rotate-90" viewBox="0 0 42 42">
-                            <circle
-                              cx="21"
-                              cy="21"
-                              r="15.915"
-                              fill="transparent"
-                              stroke="#e5e7eb"
-                              strokeWidth="3"
-                              className="dark:stroke-chocolate-700"
-                            />
-                            {categories.map(([category, data], index) => {
-                              const percentage = (data.total / total) * 100
-                              const strokeDasharray = `${percentage} ${100 - percentage}`
-                              const strokeDashoffset = -cumulativePercentage
-                              cumulativePercentage += percentage
-                              
-                              return (
-                                <circle
-                                  key={category}
-                                  cx="21"
-                                  cy="21"
-                                  r="15.915"
-                                  fill="transparent"
-                                  stroke={colors[index]}
-                                  strokeWidth="3"
-                                  strokeDasharray={strokeDasharray}
-                                  strokeDashoffset={strokeDashoffset}
-                                  className="transition-all duration-300 hover:stroke-width-4"
-                                />
-                              )
-                            })}
-                          </svg>
-                          
-                          {/* Center Text */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="text-center">
-                              <div className="text-2xl font-bold text-gray-900 dark:text-chocolate-100">
-                                {formatCurrency(total)}
-                              </div>
-                              <div className="text-sm text-gray-500 dark:text-chocolate-400">Total</div>
-                            </div>
-                          </div>
-                        </>
-                      )
-                    })()}
-                  </div>
-                  
-                  {/* Legend */}
-                  <div className="ml-8 space-y-2">
-                    {Object.entries(categoryBreakdown)
-                      .sort(([,a], [,b]) => b.total - a.total)
-                      .map(([category, data], index) => {
-                        const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#06B6D4', '#84CC16', '#6B7280']
-                        const total = Object.values(categoryBreakdown).reduce((sum, d) => sum + d.total, 0)
-                        const percentage = ((data.total / total) * 100).toFixed(1)
-                        
-                        return (
-                          <div key={category} className="flex items-center space-x-3">
-                            <div 
-                              className="w-4 h-4 rounded-full flex-shrink-0"
-                              style={{ backgroundColor: colors[index] }}
-                            ></div>
-                            <div className="flex-1">
-                              <div className="flex justify-between items-center">
-                                <span className="text-sm font-medium text-gray-900 dark:text-chocolate-100">
-                                  {category}
-                                </span>
-                                <span className="text-sm text-gray-600 dark:text-chocolate-300">
-                                  {percentage}%
-                                </span>
-                              </div>
-                              <div className="flex justify-between items-center">
-                                <span className="text-xs text-gray-500 dark:text-chocolate-400">
-                                  {data.count} subscription{data.count !== 1 ? 's' : ''}
-                                </span>
-                                <span className="text-sm font-bold text-gray-900 dark:text-chocolate-100">
-                                  {formatCurrency(data.total)}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        )
-                      })}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <FiPieChart className="w-12 h-12 text-gray-400 dark:text-chocolate-600 mx-auto mb-4" />
-                  <p className="text-gray-500 dark:text-chocolate-400">No subscriptions to analyze</p>
-                  <Link 
-                    href="/dashboard/subscriptions" 
-                    className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors"
-                  >
-                    Add your first subscription
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-
+        {/* Cost Insights */}
+        <div className="mb-8">
           {/* Enhanced Cost Insights with Visual Chart */}
           <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300">
             <div className="p-6 border-b border-gray-200 dark:border-chocolate-700">

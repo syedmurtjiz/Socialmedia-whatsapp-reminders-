@@ -9,7 +9,6 @@ import { formatCurrency, formatDatePakistani as formatDate, getDaysUntilPayment 
 import Link from 'next/link'
 import DashboardHeader from '@/components/ui/DashboardHeader'
 import StatsCard from '@/components/ui/StatsCard'
-import CategoryBreakdown from '@/components/dashboard/CategoryBreakdown'
 import LoadingState from '@/components/ui/LoadingState'
 
 export default function Dashboard() {
@@ -29,38 +28,6 @@ export default function Dashboard() {
   const monthlyTotal = getTotalMonthlyCost()
   const yearlyTotal = getTotalYearlyCost()
   const recentSubscriptions = subscriptions.slice(0, 5)
-
-  // Group subscriptions by category for pie chart data
-  const categoryBreakdown = activeSubscriptions.reduce((acc, sub) => {
-    const categoryName = sub.category?.name || 'Other'
-    if (!acc[categoryName]) {
-      acc[categoryName] = { count: 0, total: 0 }
-    }
-    acc[categoryName].count++
-    
-    // Convert to monthly cost for consistent comparison
-    let monthlyCost = sub.cost
-    if (sub.billing_cycle === 'yearly') {
-      monthlyCost = sub.cost / 12
-    } else if (sub.billing_cycle === 'weekly') {
-      monthlyCost = sub.cost * 4.33
-    }
-    
-    acc[categoryName].total += monthlyCost
-    return acc
-  }, {} as Record<string, { count: number; total: number }>)
-
-  // Prepare category data for the component
-  const categoryData = Object.entries(categoryBreakdown).map(([name, data], index) => {
-    // Define colors for categories
-    const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#06B6D4', '#84CC16', '#6B7280']
-    return {
-      name,
-      count: data.count,
-      total: data.total,
-      color: colors[index % colors.length]
-    }
-  })
 
   useEffect(() => {
     if (!loading && !user) {
@@ -142,11 +109,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Category Breakdown & Upcoming Payments */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Category Breakdown */}
-          <CategoryBreakdown categoryData={categoryData} total={monthlyTotal} />
-          
+        {/* Upcoming Payments */}
+        <div className="mb-8">
           {/* Upcoming Payments */}
           <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300">
             <div className="p-6 border-b border-gray-200 dark:border-chocolate-700">

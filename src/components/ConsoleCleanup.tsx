@@ -18,7 +18,9 @@ export function ConsoleCleanup({ children }: { children: React.ReactNode }) {
       'Fetch finished loading: GET \"chrome-extension://',
       'data-new-gr-c-s-check-loaded',
       'data-gr-ext-installed',
-      'cz-shortcut-listen'
+      'cz-shortcut-listen',
+      '__cf_bm',
+      'has been rejected for invalid domain'
     ]
 
     // Store original console methods

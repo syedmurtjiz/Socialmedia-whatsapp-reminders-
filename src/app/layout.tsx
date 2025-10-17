@@ -9,7 +9,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'BillBuddy - Manage Your Subscriptions',
+  title: 'DuePilot - Manage Your Subscriptions',
   description: 'Track, manage, and optimize your online subscriptions with intelligent alerts and cost analysis.',
   keywords: 'subscription tracker, subscription management, cost optimization, budget tracker',
   authors: [{ name: 'Subscription Tracker Team' }],
@@ -35,8 +35,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#ffffff" />
-        {/* Unregister any existing service workers */}
-        <script src="/unregister-sw.js" async />
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <ConsoleCleanup>

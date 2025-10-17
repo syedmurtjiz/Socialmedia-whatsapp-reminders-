@@ -30,40 +30,10 @@ export interface Database {
           timezone?: string
         }
       }
-      categories: {
-        Row: {
-          id: string
-          user_id: string
-          name: string
-          color: string
-          icon: string
-          created_at: string
-          is_default: boolean
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          name: string
-          color: string
-          icon: string
-          created_at?: string
-          is_default?: boolean
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          name?: string
-          color?: string
-          icon?: string
-          created_at?: string
-          is_default?: boolean
-        }
-      }
       subscriptions: {
         Row: {
           id: string
           user_id: string
-          category_id: string | null
           service_name: string
           cost: number
           currency: string
@@ -89,7 +59,6 @@ export interface Database {
         Insert: {
           id?: string
           user_id: string
-          category_id?: string | null
           service_name: string
           cost: number
           currency?: string
@@ -115,7 +84,6 @@ export interface Database {
         Update: {
           id?: string
           user_id?: string
-          category_id?: string | null
           service_name?: string
           cost?: number
           currency?: string
