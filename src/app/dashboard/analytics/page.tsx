@@ -172,34 +172,34 @@ export default function Analytics() {
         </div>
 
         {/* Advanced Analytics - Enhanced Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
           {/* Monthly Spending Trend - Bar Chart */}
-          <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300">
-            <div className="p-6 border-b border-gray-200 dark:border-chocolate-700">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-chocolate-100">Monthly Spending Trend</h3>
-                <span className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300 overflow-hidden">
+            <div className="p-3 sm:p-4 md:p-6 border-b border-gray-200 dark:border-chocolate-700">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-chocolate-100">Monthly Spending Trend</h3>
+                <span className="text-xs sm:text-sm text-green-600 dark:text-green-400 font-medium flex items-center">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
                   </svg>
                   12% growth
                 </span>
               </div>
             </div>
-            <div className="p-6">
+            <div className="p-3 sm:p-4 md:p-6">
               {activeSubscriptions.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {/* Chart Container */}
-                  <div className="h-64 flex items-end justify-between space-x-2 px-2">
+                  <div className="h-48 sm:h-56 md:h-64 lg:h-72 flex items-end justify-between gap-0.5 sm:gap-1 md:gap-2">
                     {[85, 92, 78, 95, 88, 100].map((height, index) => {
                       const value = (monthlyTotal * height) / 100
                       const monthNames = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                       
                       return (
-                        <div key={index} className="flex-1 flex flex-col items-center group">
+                        <div key={index} className="flex-1 flex flex-col items-center group min-w-0">
                           {/* Value Label */}
-                          <div className="mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <div className="bg-gray-800 dark:bg-white text-white dark:text-gray-800 text-xs px-2 py-1 rounded shadow-lg">
+                          <div className="mb-1 sm:mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <div className="bg-gray-800 dark:bg-white text-white dark:text-gray-800 text-[9px] sm:text-xs px-1 sm:px-2 py-0.5 sm:py-1 rounded shadow-lg whitespace-nowrap">
                               {formatCurrency(value)}
                             </div>
                           </div>
@@ -214,17 +214,17 @@ export default function Analytics() {
                           </div>
                           
                           {/* Month Label */}
-                          <span className="text-xs text-gray-500 dark:text-chocolate-400 mt-2 font-medium">
+                          <span className="text-[9px] sm:text-xs text-gray-500 dark:text-chocolate-400 mt-1 sm:mt-2 font-medium truncate w-full text-center">
                             {monthNames[index]}
                           </span>
                           
                           {/* Growth Indicator */}
                           {index > 0 && (
-                            <div className="mt-1">
+                            <div className="mt-0.5 sm:mt-1">
                               {height > [85, 92, 78, 95, 88, 100][index - 1] ? (
-                                <span className="text-xs text-green-500">↗</span>
+                                <span className="text-[10px] sm:text-xs text-green-500">↗</span>
                               ) : (
-                                <span className="text-xs text-red-500">↘</span>
+                                <span className="text-[10px] sm:text-xs text-red-500">↘</span>
                               )}
                             </div>
                           )}
@@ -234,16 +234,16 @@ export default function Analytics() {
                   </div>
                   
                   {/* Chart Footer */}
-                  <div className="border-t border-gray-200 dark:border-chocolate-700 pt-4">
-                    <div className="flex justify-between text-sm text-gray-600 dark:text-chocolate-300">
-                      <span>Average: {formatCurrency(monthlyTotal * 0.91)}</span>
-                      <span>Peak: {formatCurrency(monthlyTotal)}</span>
+                  <div className="border-t border-gray-200 dark:border-chocolate-700 pt-2 sm:pt-3 md:pt-4">
+                    <div className="flex flex-col sm:flex-row justify-between gap-1 sm:gap-2 text-[10px] sm:text-xs md:text-sm text-gray-600 dark:text-chocolate-300">
+                      <span className="truncate">Average: {formatCurrency(monthlyTotal * 0.91)}</span>
+                      <span className="truncate">Peak: {formatCurrency(monthlyTotal)}</span>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <FiBarChart className="w-12 h-12 text-gray-400 dark:text-chocolate-600 mx-auto mb-4" />
+                <div className="text-center py-6 sm:py-8">
+                  <FiBarChart className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 dark:text-chocolate-600 mx-auto mb-3 sm:mb-4" />
                   <p className="text-gray-500 dark:text-chocolate-400">No data to display trends</p>
                 </div>
               )}
@@ -272,10 +272,10 @@ export default function Analytics() {
                   }))
                   
                   return (
-                    <div className="flex items-center justify-center">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6 lg:gap-8">
                       {/* Donut Chart */}
-                      <div className="relative w-40 h-40">
-                        <svg className="w-40 h-40 transform -rotate-90" viewBox="0 0 42 42">
+                      <div className="relative w-48 h-48 sm:w-56 sm:h-56 lg:w-70 lg:h-70 xl:w-80 xl:h-80">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 42 42">
                           {/* Background Circle */}
                           <circle
                             cx="21"
@@ -283,8 +283,8 @@ export default function Analytics() {
                             r="15.915"
                             fill="transparent"
                             stroke="#e5e7eb"
-                            strokeWidth="4"
-                            className="dark:stroke-chocolate-700"
+                            strokeWidth="5"
+                            className="dark:stroke-chocolate-700 lg:stroke-[6] xl:stroke-[7]"
                           />
                           
                           {/* Data Segments */}
@@ -303,10 +303,10 @@ export default function Analytics() {
                                   r="15.915"
                                   fill="transparent"
                                   stroke={item.color}
-                                  strokeWidth="4"
+                                  strokeWidth="5"
                                   strokeDasharray={strokeDasharray}
                                   strokeDashoffset={strokeDashoffset}
-                                  className="transition-all duration-300 hover:stroke-width-5 cursor-pointer"
+                                  className="transition-all duration-300 hover:stroke-[6] cursor-pointer lg:stroke-[6] lg:hover:stroke-[7] xl:stroke-[7] xl:hover:stroke-[8]"
                                 />
                               )
                             })
@@ -317,27 +317,27 @@ export default function Analytics() {
                         {/* Center Content */}
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="text-center">
-                            <div className="text-xl font-bold text-gray-900 dark:text-chocolate-100">
+                            <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-chocolate-100">
                               {total}
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-chocolate-400">Total</div>
+                            <div className="text-sm sm:text-base lg:text-lg text-gray-500 dark:text-chocolate-400">Total</div>
                           </div>
                         </div>
                       </div>
                       
                       {/* Legend */}
-                      <div className="ml-6 space-y-3">
+                      <div className="space-y-3 lg:space-y-4 w-full sm:w-auto">
                         {cycleData.map((item) => (
-                          <div key={item.cycle} className="flex items-center space-x-3">
+                          <div key={item.cycle} className="flex items-center space-x-3 lg:space-x-4">
                             <div 
-                              className="w-3 h-3 rounded-full"
+                              className="w-3 h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 rounded-full flex-shrink-0"
                               style={{ backgroundColor: item.color }}
                             ></div>
                             <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900 dark:text-chocolate-100">
+                              <div className="text-sm lg:text-base xl:text-lg font-medium text-gray-900 dark:text-chocolate-100">
                                 {item.cycle}
                               </div>
-                              <div className="text-xs text-gray-500 dark:text-chocolate-400">
+                              <div className="text-xs lg:text-sm xl:text-base text-gray-500 dark:text-chocolate-400">
                                 {item.count} ({item.percentage.toFixed(0)}%)
                               </div>
                             </div>

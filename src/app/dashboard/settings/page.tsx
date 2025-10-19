@@ -240,20 +240,20 @@ export default function Settings() {
       <DashboardHeader activePage="settings" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-chocolate-100">Settings</h1>
-          <p className="text-gray-600 dark:text-chocolate-300 mt-1">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-chocolate-100">Settings</h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-chocolate-300 mt-1">
             Manage your account settings and preferences
           </p>
         </div>
 
         {/* Settings Navigation */}
-        <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl mb-8 transition-colors duration-300">
+        <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl mb-6 sm:mb-8 transition-colors duration-300">
           <div className="border-b border-gray-200 dark:border-chocolate-700">
-            <nav className="flex -mb-px">
+            <nav className="flex -mb-px overflow-x-auto scrollbar-hide">
               <button
                 onClick={() => setActiveTab('profile')}
-                className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center ${
+                className={`py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm flex items-center whitespace-nowrap ${
                   activeTab === 'profile'
                     ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-chocolate-400 dark:hover:text-chocolate-300'
@@ -264,7 +264,7 @@ export default function Settings() {
               </button>
               <button
                 onClick={() => setActiveTab('notifications')}
-                className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center ${
+                className={`py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm flex items-center whitespace-nowrap ${
                   activeTab === 'notifications'
                     ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-chocolate-400 dark:hover:text-chocolate-300'
@@ -275,7 +275,7 @@ export default function Settings() {
               </button>
               <button
                 onClick={() => setActiveTab('billing')}
-                className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center ${
+                className={`py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm flex items-center whitespace-nowrap ${
                   activeTab === 'billing'
                     ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-chocolate-400 dark:hover:text-chocolate-300'
@@ -287,15 +287,15 @@ export default function Settings() {
             </nav>
           </div>
 
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {/* Profile Tab */}
             {activeTab === 'profile' && (
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-chocolate-100 mb-6">Profile Settings</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-chocolate-100 mb-4 sm:mb-6">Profile Settings</h3>
                 
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   <div>
-                    <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 dark:text-chocolate-300 mb-1">
+                    <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 dark:text-chocolate-300 mb-1.5 sm:mb-1">
                       Full Name
                     </label>
                     <input
@@ -304,12 +304,12 @@ export default function Settings() {
                       id="full_name"
                       value={profileForm.full_name}
                       onChange={handleProfileChange}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-chocolate-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-2 border border-gray-300 dark:border-chocolate-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200 text-sm sm:text-base"
                     />
                   </div>
                   
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-chocolate-300 mb-1">
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-chocolate-300 mb-1.5 sm:mb-1">
                       Email Address
                     </label>
                     <input
@@ -318,15 +318,15 @@ export default function Settings() {
                       id="email"
                       value={profileForm.email}
                       disabled
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-chocolate-600 rounded-lg shadow-sm placeholder-gray-400 bg-gray-50 dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-2 border border-gray-300 dark:border-chocolate-600 rounded-lg shadow-sm placeholder-gray-400 bg-gray-50 dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200 text-sm sm:text-base"
                     />
-                    <p className="mt-1 text-sm text-gray-500 dark:text-chocolate-400">
+                    <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-chocolate-400">
                       Email cannot be changed
                     </p>
                   </div>
                   
                   <div>
-                    <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 dark:text-chocolate-300 mb-1">
+                    <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 dark:text-chocolate-300 mb-1.5 sm:mb-1">
                       Timezone
                     </label>
                     <select
@@ -334,7 +334,7 @@ export default function Settings() {
                       id="timezone"
                       value={profileForm.timezone}
                       onChange={handleProfileChange}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-chocolate-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-2 border border-gray-300 dark:border-chocolate-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200 text-sm sm:text-base"
                     >
                       <option value="UTC">UTC</option>
                       <option value="Asia/Karachi">Asia/Karachi (Pakistan)</option>
@@ -345,11 +345,11 @@ export default function Settings() {
                     </select>
                   </div>
                   
-                  <div className="flex justify-end">
+                  <div className="flex justify-end pt-2">
                     <button
                       onClick={saveProfile}
                       disabled={saving}
-                      className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center disabled:opacity-50"
+                      className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 sm:py-2 px-4 sm:px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center justify-center disabled:opacity-50 text-sm sm:text-base"
                     >
                       {saving ? (
                         <>
@@ -371,29 +371,29 @@ export default function Settings() {
             {/* Notifications Tab */}
             {activeTab === 'notifications' && (
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-chocolate-100 mb-6">Notification Preferences</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-chocolate-100 mb-4 sm:mb-6">Notification Preferences</h3>
                 
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* WhatsApp Number */}
-                  <div className="p-4 border border-gray-200 dark:border-chocolate-700 rounded-lg">
+                  <div className="p-3 sm:p-4 border border-gray-200 dark:border-chocolate-700 rounded-lg">
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-chocolate-100 mb-2">WhatsApp Reminders</h4>
-                      <p className="text-sm text-gray-500 dark:text-chocolate-400 mb-4">
+                      <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-chocolate-100 mb-2">WhatsApp Reminders</h4>
+                      <p className="text-xs sm:text-sm text-gray-500 dark:text-chocolate-400 mb-3 sm:mb-4">
                         Enter your WhatsApp number to receive subscription reminders
                       </p>
-                      <div className="flex gap-4">
+                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                         <input
                           type="tel"
                           name="whatsapp_number"
                           value={notificationSettings.whatsapp_number}
                           onChange={handleNotificationChange}
                           placeholder="+923001234567"
-                          className="flex-1 px-4 py-2 border border-gray-300 dark:border-chocolate-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200"
+                          className="flex-1 px-3 sm:px-4 py-2.5 sm:py-2 border border-gray-300 dark:border-chocolate-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200 text-sm sm:text-base"
                         />
                         <button
                           onClick={saveWhatsAppNumber}
                           disabled={saving}
-                          className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center disabled:opacity-50"
+                          className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 sm:py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center justify-center disabled:opacity-50 whitespace-nowrap text-sm sm:text-base"
                         >
                           {saving ? (
                             <>
@@ -414,11 +414,11 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  <div className="p-4 border border-gray-200 dark:border-chocolate-700 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium text-gray-900 dark:text-chocolate-100">Email Notifications</h4>
-                        <p className="text-sm text-gray-500 dark:text-chocolate-400">
+                  <div className="p-3 sm:p-4 border border-gray-200 dark:border-chocolate-700 rounded-lg">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-chocolate-100">Email Notifications</h4>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-chocolate-400">
                           Receive email notifications for important updates
                         </p>
                       </div>
@@ -435,11 +435,11 @@ export default function Settings() {
                     </div>
                   </div>
                   
-                  <div className="p-4 border border-gray-200 dark:border-chocolate-700 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium text-gray-900 dark:text-chocolate-100">Push Notifications</h4>
-                        <p className="text-sm text-gray-500 dark:text-chocolate-400">
+                  <div className="p-3 sm:p-4 border border-gray-200 dark:border-chocolate-700 rounded-lg">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-chocolate-100">Push Notifications</h4>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-chocolate-400">
                           Receive push notifications in your browser
                         </p>
                       </div>
@@ -485,60 +485,60 @@ export default function Settings() {
             {/* Billing Tab */}
             {activeTab === 'billing' && (
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-chocolate-100 mb-6">Billing Information</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-chocolate-100 mb-4 sm:mb-6">Billing Information</h3>
                 
-                <div className="space-y-6">
-                  <div className="p-6 bg-gray-50 dark:bg-chocolate-800 rounded-lg">
-                    <h4 className="font-medium text-gray-900 dark:text-chocolate-100 mb-2">Current Plan</h4>
-                    <div className="flex items-center justify-between">
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="p-4 sm:p-6 bg-gray-50 dark:bg-chocolate-800 rounded-lg">
+                    <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-chocolate-100 mb-2">Current Plan</h4>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div>
-                        <p className="text-2xl font-bold text-gray-900 dark:text-chocolate-100">Free Plan</p>
-                        <p className="text-sm text-gray-500 dark:text-chocolate-400">No credit card required</p>
+                        <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-chocolate-100">Free Plan</p>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-chocolate-400">No credit card required</p>
                       </div>
-                      <span className="px-3 py-1 text-sm font-semibold bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full">
+                      <span className="px-3 py-1 text-xs sm:text-sm font-semibold bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full self-start sm:self-auto">
                         Active
                       </span>
                     </div>
                   </div>
                   
                   <div>
-                    <h4 className="font-medium text-gray-900 dark:text-chocolate-100 mb-3">Plan Features</h4>
+                    <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-chocolate-100 mb-3">Plan Features</h4>
                     <ul className="space-y-2">
                       <li className="flex items-center">
-                        <FiCheck className="h-5 w-5 text-green-500 mr-2" />
-                        <span className="text-gray-600 dark:text-chocolate-300">Track up to 10 subscriptions</span>
+                        <FiCheck className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 mr-2 flex-shrink-0" />
+                        <span className="text-sm sm:text-base text-gray-600 dark:text-chocolate-300">Track up to 10 subscriptions</span>
                       </li>
                       <li className="flex items-center">
-                        <FiCheck className="h-5 w-5 text-green-500 mr-2" />
-                        <span className="text-gray-600 dark:text-chocolate-300">Email notifications</span>
+                        <FiCheck className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 mr-2 flex-shrink-0" />
+                        <span className="text-sm sm:text-base text-gray-600 dark:text-chocolate-300">Email notifications</span>
                       </li>
                       <li className="flex items-center">
-                        <FiCheck className="h-5 w-5 text-green-500 mr-2" />
-                        <span className="text-gray-600 dark:text-chocolate-300">Basic analytics</span>
+                        <FiCheck className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 mr-2 flex-shrink-0" />
+                        <span className="text-sm sm:text-base text-gray-600 dark:text-chocolate-300">Basic analytics</span>
                       </li>
                       <li className="flex items-center text-gray-400 dark:text-chocolate-500">
-                        <FiX className="h-5 w-5 mr-2" />
-                        <span>Priority support</span>
+                        <FiX className="h-4 w-4 sm:h-5 sm:w-5 mr-2 flex-shrink-0" />
+                        <span className="text-sm sm:text-base">Priority support</span>
                       </li>
                       <li className="flex items-center text-gray-400 dark:text-chocolate-500">
-                        <FiX className="h-5 w-5 mr-2" />
-                        <span>Advanced analytics</span>
+                        <FiX className="h-4 w-4 sm:h-5 sm:w-5 mr-2 flex-shrink-0" />
+                        <span className="text-sm sm:text-base">Advanced analytics</span>
                       </li>
                       <li className="flex items-center text-gray-400 dark:text-chocolate-500">
-                        <FiX className="h-5 w-5 mr-2" />
-                        <span>Unlimited subscriptions</span>
+                        <FiX className="h-4 w-4 sm:h-5 sm:w-5 mr-2 flex-shrink-0" />
+                        <span className="text-sm sm:text-base">Unlimited subscriptions</span>
                       </li>
                     </ul>
                   </div>
                   
-                  <div className="border-t border-gray-200 dark:border-chocolate-700 pt-6">
+                  <div className="border-t border-gray-200 dark:border-chocolate-700 pt-4 sm:pt-6">
                     <button
                       disabled
-                      className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                     >
                       Upgrade to Pro Plan (Coming Soon)
                     </button>
-                    <p className="mt-2 text-center text-sm text-gray-500 dark:text-chocolate-400">
+                    <p className="mt-2 text-center text-xs sm:text-sm text-gray-500 dark:text-chocolate-400">
                       Pro Plan will include advanced features
                     </p>
                   </div>
@@ -550,20 +550,20 @@ export default function Settings() {
 
         {/* Danger Zone */}
         <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300">
-          <div className="p-6 border-b border-gray-200 dark:border-chocolate-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-chocolate-100">Danger Zone</h3>
+          <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-chocolate-700">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-chocolate-100">Danger Zone</h3>
           </div>
-          <div className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-chocolate-100">Sign Out</h4>
-                <p className="text-sm text-gray-500 dark:text-chocolate-400">
+          <div className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              <div className="flex-1">
+                <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-chocolate-100">Sign Out</h4>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-chocolate-400">
                   Sign out of your account on this device
                 </p>
               </div>
               <button
                 onClick={handleSignOut}
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 sm:py-2 px-4 sm:px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-sm sm:text-base whitespace-nowrap"
               >
                 Sign Out
               </button>

@@ -47,17 +47,17 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-chocolate-100 mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-chocolate-100 mb-2">
             Welcome back, {user?.user_metadata?.full_name || 'User'}!
           </h2>
-          <p className="text-gray-600 dark:text-chocolate-300">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-chocolate-300">
             Here&apos;s an overview of your subscriptions and spending.
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <StatsCard 
             title="Monthly Cost" 
             value={formatCurrency(monthlyTotal)} 
@@ -85,12 +85,12 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl mb-8 transition-colors duration-300">
-          <div className="p-6 border-b border-gray-200 dark:border-chocolate-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-chocolate-100">Quick Actions</h3>
+        <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl mb-6 sm:mb-8 transition-colors duration-300">
+          <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-chocolate-700">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-chocolate-100">Quick Actions</h3>
           </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               <Link href="/dashboard/subscriptions?add=true" className="flex items-center p-4 border-2 border-dashed border-gray-300 dark:border-chocolate-600 rounded-lg hover:border-primary-300 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-200">
                 <FiPlus className="w-5 h-5 text-gray-400 dark:text-gray-400 mr-3" />
                 <span className="text-gray-600 dark:text-chocolate-300 font-medium">Add Subscription</span>
@@ -110,33 +110,33 @@ export default function Dashboard() {
         </div>
 
         {/* Upcoming Payments */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           {/* Upcoming Payments */}
           <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300">
-            <div className="p-6 border-b border-gray-200 dark:border-chocolate-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-chocolate-100">Upcoming Payments</h3>
+            <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-chocolate-700">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-chocolate-100">Upcoming Payments</h3>
             </div>
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               {upcomingPayments.length > 0 ? (
                 <div className="space-y-4">
                   {upcomingPayments.map((subscription) => {
                     const daysUntil = getDaysUntilPayment(subscription.next_payment_date)
                     return (
-                      <div key={subscription.id} className="flex items-center justify-between p-3 border border-gray-200 dark:border-chocolate-600 rounded-lg bg-gray-50 dark:bg-gray-800/50 transition-colors duration-300">
+                      <div key={subscription.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 border border-gray-200 dark:border-chocolate-600 rounded-lg bg-gray-50 dark:bg-gray-800/50 transition-colors duration-300 gap-3 sm:gap-0">
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
-                            <FiCalendar className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                            <FiCalendar className="w-4 h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400" />
                           </div>
-                          <div>
-                            <p className="font-medium text-gray-900 dark:text-chocolate-100">{subscription.service_name}</p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-chocolate-100 truncate">{subscription.service_name}</p>
+                            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                               {daysUntil === 0 ? 'Due today' : `Due in ${daysUntil} day${daysUntil > 1 ? 's' : ''}`}
                             </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-gray-900 dark:text-chocolate-100">{formatCurrency(subscription.cost)}</p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(subscription.next_payment_date)}</p>
+                        <div className="text-left sm:text-right pl-11 sm:pl-0">
+                          <p className="font-semibold text-sm sm:text-base text-gray-900 dark:text-chocolate-100">{formatCurrency(subscription.cost)}</p>
+                          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{formatDate(subscription.next_payment_date)}</p>
                         </div>
                       </div>
                     )
@@ -158,10 +158,10 @@ export default function Dashboard() {
 
         {/* Recent Subscriptions */}
         <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300">
-          <div className="p-6 border-b border-gray-200 dark:border-chocolate-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-chocolate-100">Recent Subscriptions</h3>
+          <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-chocolate-700">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-chocolate-100">Recent Subscriptions</h3>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {recentSubscriptions.length > 0 ? (
               <div className="space-y-4">
                 {recentSubscriptions.map((subscription) => (

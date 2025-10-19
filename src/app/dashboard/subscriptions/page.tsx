@@ -172,25 +172,25 @@ export default function SubscriptionsPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-chocolate-100">Subscriptions</h1>
-            <p className="text-gray-600 dark:text-chocolate-300 mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-chocolate-100">Subscriptions</h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-chocolate-300 mt-1">
               Manage your subscriptions and track upcoming payments
             </p>
           </div>
           <button
             onClick={() => { setEditingSubscription(null); setShowForm(true) }}
-            className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center shadow-md hover:shadow-lg"
+            className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 sm:py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center justify-center shadow-md hover:shadow-lg whitespace-nowrap"
           >
             <FiPlus className="w-5 h-5 mr-2" />
-            Add Subscription
+            <span className="text-sm sm:text-base">Add Subscription</span>
           </button>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white dark:bg-chocolate-900 rounded-xl shadow-lg dark:shadow-2xl p-6 mb-6 transition-colors duration-300">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="bg-white dark:bg-chocolate-900 rounded-xl shadow-lg dark:shadow-2xl p-4 sm:p-6 mb-6 transition-colors duration-300">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {/* Search */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -217,11 +217,11 @@ export default function SubscriptionsPage() {
             </select>
 
             {/* Sort */}
-            <div className="flex space-x-2">
+            <div className="flex gap-2 sm:col-span-2 lg:col-span-1">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200 flex-1"
+                className="flex-1 px-3 sm:px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 bg-white dark:bg-chocolate-800 text-gray-900 dark:text-chocolate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200 text-sm sm:text-base"
               >
                 <option value="created">Created Date</option>
                 <option value="name">Name</option>
@@ -230,10 +230,10 @@ export default function SubscriptionsPage() {
               </select>
               <button
                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="px-3 py-2 border border-gray-300 dark:border-chocolate-700 rounded-md hover:bg-gray-50 dark:hover:bg-chocolate-800 bg-white dark:bg-chocolate-900 text-gray-700 dark:text-chocolate-200 transition-colors"
+                className="px-3 sm:px-4 py-2 border border-gray-300 dark:border-chocolate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-chocolate-800 bg-white dark:bg-chocolate-900 text-gray-700 dark:text-chocolate-200 transition-colors flex-shrink-0"
                 title={`Sort ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
               >
-                {sortOrder === 'asc' ? '↑' : '↓'}
+                <span className="text-lg">{sortOrder === 'asc' ? '↑' : '↓'}</span>
               </button>
             </div>
           </div>
@@ -248,14 +248,14 @@ export default function SubscriptionsPage() {
 
         {/* Subscriptions Grid */}
         {filteredSubscriptions.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 dark:bg-chocolate-800 rounded-full flex items-center justify-center">
-              <FiDollarSign className="w-12 h-12 text-gray-400 dark:text-chocolate-400" />
+          <div className="text-center py-12 sm:py-16 px-4">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gray-100 dark:bg-chocolate-800 rounded-full flex items-center justify-center">
+              <FiDollarSign className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 dark:text-chocolate-400" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-chocolate-100 mb-2">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-chocolate-100 mb-2">
               {subscriptions.length === 0 ? 'No subscriptions yet' : 'No subscriptions match your filters'}
             </h3>
-            <p className="text-gray-600 dark:text-chocolate-300 mb-8 max-w-md mx-auto">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-chocolate-300 mb-6 sm:mb-8 max-w-md mx-auto">
               {subscriptions.length === 0 
                 ? 'Add your first subscription to get started tracking your expenses.'
                 : 'Try adjusting your search or filter criteria.'}
@@ -263,14 +263,14 @@ export default function SubscriptionsPage() {
             {subscriptions.length === 0 && (
               <button
                 onClick={() => { setEditingSubscription(null); setShowForm(true) }}
-                className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 shadow-md hover:shadow-lg"
+                className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 shadow-md hover:shadow-lg text-sm sm:text-base"
               >
                 Add Your First Subscription
               </button>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredSubscriptions.map((subscription) => {
               const bank = subscription.bank || banks.find(b => b.id === subscription.bank_id) || null
 
