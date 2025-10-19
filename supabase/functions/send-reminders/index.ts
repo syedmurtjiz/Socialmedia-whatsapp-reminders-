@@ -80,12 +80,20 @@ function formatCurrency(amount: number, currency: string): string {
 
 /**
  * Calculate reminder date based on next payment date and days before
+ * Fixed to handle timezone correctly
  */
 function calculateReminderDate(nextPaymentDate: string, daysBefore: number): string {
-  const paymentDate = new Date(nextPaymentDate)
+  // Parse date components to avoid timezone issues
+  const [year, month, day] = nextPaymentDate.split('-').map(Number)
+  const paymentDate = new Date(year, month - 1, day) // month is 0-indexed
   const reminderDate = new Date(paymentDate)
   reminderDate.setDate(reminderDate.getDate() - daysBefore)
-  return reminderDate.toISOString().split('T')[0]
+  
+  // Format as YYYY-MM-DD
+  const y = reminderDate.getFullYear()
+  const m = String(reminderDate.getMonth() + 1).padStart(2, '0')
+  const d = String(reminderDate.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
 }
 
 /**
@@ -360,7 +368,7 @@ serve(async (req) => {
       // Calculate days until payment
       const paymentDate = new Date(subscription.next_payment_date)
       const todayDate = new Date(pakistanTime.dateString)
-      const daysUntilPayment = Math.ceil((paymentDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24))
+      const daysUntilPayment = Math.round((paymentDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24))
       
       console.log(`  - Days until payment: ${daysUntilPayment}`)
       

@@ -69,9 +69,11 @@ export async function GET() {
       const paymentDate = new Date(subscription.next_payment_date)
       paymentDate.setHours(0, 0, 0, 0)
       
-      const daysUntilPayment = Math.ceil(
+      const daysUntilPayment = Math.round(
         (paymentDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
       )
+
+      console.log(`[${subscription.service_name}] Payment: ${subscription.next_payment_date}, Days until: ${daysUntilPayment}, Reminder days: ${subscription.reminder_days_before}`)
 
       // Check if reminder already sent today (prevent duplicates)
       const todayStr = today.toISOString().split('T')[0]
@@ -90,6 +92,8 @@ export async function GET() {
       
       // Check if current time EXACTLY matches reminder time (same hour and minute)
       const isTimeToSend = currentHour === reminderHour && currentMinute === reminderMinute
+
+      console.log(`[${subscription.service_name}] Current time: ${currentHour}:${currentMinute}, Reminder time: ${reminderHour}:${reminderMinute}, Match: ${isTimeToSend}`)
 
       if (!isTimeToSend) {
         results.skipped++
