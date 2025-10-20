@@ -194,8 +194,22 @@ function createReminderMessage(
 // MAIN HANDLER
 // ============================================
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+      },
+    })
+  }
+
   try {
     console.log('🚀 Starting reminder check...')
+    console.log(`📥 Request method: ${req.method}`)
+    console.log(`📥 Request headers:`, Object.fromEntries(req.headers.entries()))
     
     // Get environment variables
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -210,7 +224,13 @@ serve(async (req) => {
         JSON.stringify({
           error: 'Missing WhatsApp credentials. Please set META_WHATSAPP_ACCESS_TOKEN and META_PHONE_NUMBER_ID'
         }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
+        { 
+          status: 500, 
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          } 
+        }
       )
     }
     
@@ -233,7 +253,13 @@ serve(async (req) => {
       console.error('❌ Error fetching subscriptions:', error)
       return new Response(
         JSON.stringify({ error: 'Failed to fetch subscriptions', details: error }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
+        { 
+          status: 500, 
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          } 
+        }
       )
     }
     
@@ -246,7 +272,13 @@ serve(async (req) => {
           message: 'No subscriptions with WhatsApp numbers found',
           results: { total: 0, sent: 0, failed: 0, skipped: 0, details: [] }
         }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
+        { 
+          status: 200, 
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          } 
+        }
       )
     }
     
@@ -461,7 +493,13 @@ serve(async (req) => {
         pakistan_time: `${pakistanTime.dateString} ${pakistanTime.timeString}`,
         results
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { 
+        status: 200, 
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        } 
+      }
     )
   } catch (error) {
     console.error('❌ Unexpected error:', error)
@@ -470,7 +508,13 @@ serve(async (req) => {
         error: 'Internal server error',
         details: error instanceof Error ? error.message : 'Unknown error'
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { 
+        status: 500, 
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        } 
+      }
     )
   }
 })

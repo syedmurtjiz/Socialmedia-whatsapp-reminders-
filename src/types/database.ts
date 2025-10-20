@@ -130,6 +130,38 @@ export interface Database {
           updated_at?: string
         }
       }
+      user_profiles: {
+        Row: {
+          id: string
+          whatsapp_number: string | null
+          reminder_time: string | null
+          timezone: string
+          email_notifications: boolean
+          push_notifications: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          whatsapp_number?: string | null
+          reminder_time?: string | null
+          timezone?: string
+          email_notifications?: boolean
+          push_notifications?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          whatsapp_number?: string | null
+          reminder_time?: string | null
+          timezone?: string
+          email_notifications?: boolean
+          push_notifications?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
       notifications: {
         Row: {
           id: string
