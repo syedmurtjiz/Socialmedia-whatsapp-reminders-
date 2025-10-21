@@ -488,7 +488,7 @@ export default function Analytics() {
                       <div>
                         <h4 className="text-sm font-medium text-amber-800 dark:text-amber-300 mb-1">Action Required</h4>
                         <p className="text-xs text-amber-700 dark:text-amber-400">
-                          You have {failedReminders} failed reminder{failedReminders > 1 ? 's' : ''}. Check your WhatsApp number in settings and ensure it's verified in Meta Business.
+                          You have {failedReminders} failed reminder{failedReminders > 1 ? 's' : ''}. Check your WhatsApp number in settings and ensure it&apos;s verified in Meta Business.
                         </p>
                       </div>
                     </div>
