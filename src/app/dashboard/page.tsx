@@ -4,7 +4,8 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useSubscriptions } from '@/hooks/useSubscriptions'
-import { FiPlus, FiCreditCard, FiTrendingUp, FiCalendar, FiPieChart } from 'react-icons/fi'
+import { useNotifications } from '@/hooks/useNotifications'
+import { FiPlus, FiCreditCard, FiTrendingUp, FiCalendar, FiPieChart, FiBell, FiCheckCircle, FiXCircle } from 'react-icons/fi'
 import { formatCurrency, formatDatePakistani as formatDate, getDaysUntilPayment } from '@/utils'
 import Link from 'next/link'
 import DashboardHeader from '@/components/ui/DashboardHeader'
@@ -20,6 +21,7 @@ export default function Dashboard() {
     getTotalMonthlyCost,
     getTotalYearlyCost
   } = useSubscriptions()
+  const { notifications, getUnreadCount } = useNotifications()
   const router = useRouter()
 
   // Calculate dashboard statistics
@@ -28,6 +30,12 @@ export default function Dashboard() {
   const monthlyTotal = getTotalMonthlyCost()
   const yearlyTotal = getTotalYearlyCost()
   const recentSubscriptions = subscriptions.slice(0, 5)
+  
+  // WhatsApp notification stats
+  const whatsappNotifications = notifications.filter(n => n.type === 'whatsapp_reminder')
+  const sentReminders = whatsappNotifications.filter(n => n.status === 'sent').length
+  const failedReminders = whatsappNotifications.filter(n => n.status === 'failed').length
+  const recentNotifications = notifications.slice(0, 5)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -71,16 +79,17 @@ export default function Dashboard() {
             color="green" 
           />
           <StatsCard 
+            title="WhatsApp Reminders" 
+            value={sentReminders} 
+            icon={<FiBell className="w-6 h-6" />} 
+            color="purple" 
+            description="sent successfully"
+          />
+          <StatsCard 
             title="Due This Week" 
             value={upcomingPayments.length} 
             icon={<FiCalendar className="w-6 h-6" />} 
             color="yellow" 
-          />
-          <StatsCard 
-            title="Yearly Cost" 
-            value={formatCurrency(yearlyTotal)} 
-            icon={<FiTrendingUp className="w-6 h-6" />} 
-            color="purple" 
           />
         </div>
 
@@ -155,6 +164,73 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Recent Notifications */}
+        {recentNotifications.length > 0 && (
+          <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300 mb-6 sm:mb-8">
+            <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-chocolate-700">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-chocolate-100">Recent Notifications</h3>
+                <span className="text-xs sm:text-sm px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-full font-medium">
+                  {getUnreadCount()} unread
+                </span>
+              </div>
+            </div>
+            <div className="p-4 sm:p-6">
+              <div className="space-y-3">
+                {recentNotifications.map((notification) => (
+                  <div key={notification.id} className={`flex items-start p-3 rounded-lg border ${
+                    notification.status === 'read' 
+                      ? 'bg-gray-50 dark:bg-chocolate-800 border-gray-200 dark:border-chocolate-600' 
+                      : 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800'
+                  }`}>
+                    <div className="flex-shrink-0 mt-0.5">
+                      {notification.status === 'sent' ? (
+                        <FiCheckCircle className="w-5 h-5 text-green-500" />
+                      ) : notification.status === 'failed' ? (
+                        <FiXCircle className="w-5 h-5 text-red-500" />
+                      ) : (
+                        <FiBell className="w-5 h-5 text-blue-500" />
+                      )}
+                    </div>
+                    <div className="ml-3 flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-chocolate-100">
+                        {notification.title}
+                      </p>
+                      <p className="text-xs text-gray-600 dark:text-chocolate-300 mt-1 line-clamp-2">
+                        {notification.message}
+                      </p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                          notification.status === 'sent' 
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                            : notification.status === 'failed'
+                            ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                        }`}>
+                          {notification.status}
+                        </span>
+                        {notification.whatsapp_number && (
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            📱 {notification.whatsapp_number}
+                          </span>
+                        )}
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(notification.created_at).toLocaleDateString('en-PK', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Recent Subscriptions */}
         <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300">

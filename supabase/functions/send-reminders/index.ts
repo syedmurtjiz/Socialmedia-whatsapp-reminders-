@@ -3,7 +3,17 @@
 // ============================================
 // This function checks for subscriptions that need reminders
 // and sends WhatsApp messages via Meta WhatsApp API
-// Configured for Pakistan timezone (UTC+5)
+// 
+// OPTIMIZED FOR PAKISTAN TIMEZONE (UTC+5)
+// 
+// Features:
+// - Automatic timezone conversion (UTC → Pakistan)
+// - WhatsApp number validation
+// - Duplicate prevention (won't send same reminder twice)
+// - Comprehensive logging for debugging
+// - Failed reminder tracking
+// - Web notification creation
+// - Bank name and website inclusion
 // ============================================
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
@@ -157,10 +167,15 @@ function createReminderMessage(
   const { service_name, cost, currency, next_payment_date, website_url } = subscription
   
   const formattedCost = formatCurrency(cost, currency)
-  const formattedDate = new Date(next_payment_date).toLocaleDateString('en-PK', {
+  
+  // Parse date correctly to avoid timezone issues
+  const [year, month, day] = next_payment_date.split('-').map(Number)
+  const paymentDate = new Date(year, month - 1, day)
+  const formattedDate = paymentDate.toLocaleDateString('en-PK', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
+    timeZone: 'Asia/Karachi'
   })
   
   // Build the base message
@@ -335,6 +350,20 @@ serve(async (req) => {
         continue
       }
       
+      // Validate WhatsApp number format (must start with + and have 10-15 digits)
+      const whatsappRegex = /^\+\d{10,15}$/
+      if (!whatsappRegex.test(whatsappNumber)) {
+        console.log(`  ⏭️ Skipping - invalid WhatsApp number format: ${whatsappNumber}`)
+        results.skipped++
+        results.details.push({
+          subscription_id: subscription.id,
+          service_name: subscription.service_name,
+          status: 'skipped',
+          reason: `Invalid WhatsApp number format (must be +92XXXXXXXXXX)`
+        })
+        continue
+      }
+      
       console.log(`  - Next payment: ${subscription.next_payment_date}`)
       console.log(`  - Reminder days before: ${subscription.reminder_days_before}`)
       console.log(`  - Calculated reminder date: ${reminderDate}`)
@@ -431,36 +460,43 @@ serve(async (req) => {
         metaPhoneNumberId
       )
       
+      const now = new Date().toISOString()
+      
       if (result.success) {
         console.log(`  ✅ Reminder sent successfully`)
         
         // Update last_reminder_sent timestamp
         const { error: updateError } = await supabase
           .from('subscriptions')
-          .update({ last_reminder_sent: new Date().toISOString() })
+          .update({ last_reminder_sent: now })
           .eq('id', subscription.id)
         
         if (updateError) {
           console.error(`  ⚠️ Error updating last_reminder_sent:`, updateError)
+        } else {
+          console.log(`  💾 Updated last_reminder_sent timestamp`)
         }
         
-        // Create web notification for the user
+        // Create web notification for the user with all required fields
         const { error: notificationError } = await supabase
           .from('notifications')
           .insert({
             user_id: subscription.user_id,
             subscription_id: subscription.id,
             type: 'whatsapp_reminder',
-            title: 'WhatsApp Reminder Sent',
+            title: `${subscription.service_name} Payment Reminder`,
             message: message,
+            whatsapp_number: whatsappNumber,
             status: 'sent',
-            created_at: new Date().toISOString()
+            sent_at: now,
+            created_at: now,
+            updated_at: now
           })
         
         if (notificationError) {
           console.error(`  ⚠️ Error creating notification:`, notificationError)
         } else {
-          console.log(`  📬 Web notification created`)
+          console.log(`  📬 Web notification created successfully`)
         }
         
         results.sent++
@@ -471,6 +507,27 @@ serve(async (req) => {
         })
       } else {
         console.log(`  ❌ Failed to send reminder: ${result.error}`)
+        
+        // Create failed notification
+        const { error: notificationError } = await supabase
+          .from('notifications')
+          .insert({
+            user_id: subscription.user_id,
+            subscription_id: subscription.id,
+            type: 'whatsapp_reminder',
+            title: `${subscription.service_name} Reminder Failed`,
+            message: message,
+            whatsapp_number: whatsappNumber,
+            status: 'failed',
+            error_message: result.error,
+            created_at: now,
+            updated_at: now
+          })
+        
+        if (notificationError) {
+          console.error(`  ⚠️ Error creating failed notification:`, notificationError)
+        }
+        
         results.failed++
         results.details.push({
           subscription_id: subscription.id,

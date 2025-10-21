@@ -4,7 +4,8 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useSubscriptions } from '@/hooks/useSubscriptions'
-import { FiTrendingUp, FiPieChart, FiBarChart, FiDollarSign, FiCalendar } from 'react-icons/fi'
+import { useNotifications } from '@/hooks/useNotifications'
+import { FiTrendingUp, FiPieChart, FiBarChart, FiDollarSign, FiCalendar, FiBell, FiCheckCircle, FiXCircle, FiAlertCircle } from 'react-icons/fi'
 import { formatCurrency, formatDatePakistani as formatDate, getDaysUntilPayment } from '@/utils'
 import Link from 'next/link'
 import DashboardHeader from '@/components/ui/DashboardHeader'
@@ -19,6 +20,7 @@ export default function Analytics() {
     getTotalMonthlyCost,
     getTotalYearlyCost
   } = useSubscriptions()
+  const { notifications } = useNotifications()
   const router = useRouter()
 
   useEffect(() => {
@@ -34,6 +36,14 @@ export default function Analytics() {
   const activeSubscriptions = getActiveSubscriptions()
   const monthlyTotal = getTotalMonthlyCost()
   const yearlyTotal = getTotalYearlyCost()
+  
+  // WhatsApp analytics
+  const whatsappNotifications = notifications.filter(n => n.type === 'whatsapp_reminder')
+  const sentReminders = whatsappNotifications.filter(n => n.status === 'sent').length
+  const failedReminders = whatsappNotifications.filter(n => n.status === 'failed').length
+  const successRate = whatsappNotifications.length > 0 
+    ? ((sentReminders / whatsappNotifications.length) * 100).toFixed(1)
+    : '0'
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-chocolate-950 transition-colors duration-300">
@@ -361,6 +371,139 @@ export default function Analytics() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* WhatsApp Analytics Section */}
+        <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300 mb-8">
+          <div className="p-6 border-b border-gray-200 dark:border-chocolate-700">
+            <div className="flex items-center space-x-2">
+              <FiBell className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-chocolate-100">WhatsApp Reminders Analytics</h3>
+            </div>
+          </div>
+          <div className="p-6">
+            {whatsappNotifications.length > 0 ? (
+              <div className="space-y-6">
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FiBell className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Total Sent</span>
+                    </div>
+                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{whatsappNotifications.length}</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">All time reminders</p>
+                  </div>
+                  
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FiCheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      <span className="text-sm font-medium text-green-700 dark:text-green-300">Successful</span>
+                    </div>
+                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">{sentReminders}</p>
+                    <p className="text-xs text-green-600 dark:text-green-400 mt-1">Delivered to WhatsApp</p>
+                  </div>
+                  
+                  <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 border border-red-200 dark:border-red-800">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FiXCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      <span className="text-sm font-medium text-red-700 dark:text-red-300">Failed</span>
+                    </div>
+                    <p className="text-2xl font-bold text-red-600 dark:text-red-400">{failedReminders}</p>
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-1">Need attention</p>
+                  </div>
+                  
+                  <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FiTrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      <span className="text-sm font-medium text-purple-700 dark:text-purple-300">Success Rate</span>
+                    </div>
+                    <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{successRate}%</p>
+                    <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">Delivery success</p>
+                  </div>
+                </div>
+                
+                {/* Success Rate Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-700 dark:text-chocolate-300 font-medium">Delivery Performance</span>
+                    <span className="text-gray-600 dark:text-chocolate-400">{sentReminders}/{whatsappNotifications.length} successful</span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-chocolate-800 rounded-full h-3">
+                    <div 
+                      className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${successRate}%` }}
+                    ></div>
+                  </div>
+                </div>
+                
+                {/* Recent Activity */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-chocolate-100">Recent Activity</h4>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {whatsappNotifications.slice(0, 5).map((notification) => (
+                      <div key={notification.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-chocolate-800 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          {notification.status === 'sent' ? (
+                            <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                              <FiCheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                            </div>
+                          ) : (
+                            <div className="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                              <FiXCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-sm font-medium text-gray-900 dark:text-chocolate-100">
+                              {notification.title}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-chocolate-400">
+                              {new Date(notification.created_at).toLocaleDateString('en-PK', {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                          notification.status === 'sent'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                            : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                        }`}>
+                          {notification.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Tips */}
+                {failedReminders > 0 && (
+                  <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
+                    <div className="flex items-start space-x-2">
+                      <FiAlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-sm font-medium text-amber-800 dark:text-amber-300 mb-1">Action Required</h4>
+                        <p className="text-xs text-amber-700 dark:text-amber-400">
+                          You have {failedReminders} failed reminder{failedReminders > 1 ? 's' : ''}. Check your WhatsApp number in settings and ensure it's verified in Meta Business.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-chocolate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FiBell className="w-8 h-8 text-gray-400 dark:text-chocolate-600" />
+                </div>
+                <p className="text-gray-600 dark:text-chocolate-400 font-medium mb-2">No WhatsApp reminders yet</p>
+                <p className="text-sm text-gray-500 dark:text-chocolate-500">Add subscriptions with reminder times to start receiving WhatsApp notifications</p>
+              </div>
+            )}
           </div>
         </div>
 
