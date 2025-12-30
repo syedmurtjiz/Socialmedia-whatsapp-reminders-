@@ -88,7 +88,7 @@ export default function Footer() {
                     <h4 className="font-bold">2. Use License</h4>
                     <p className="text-sm">We grant you a personal, non-exclusive license to use our services.</p>
                     <h4 className="font-bold">3. Account Security</h4>
-                    <p className="text-sm">You are responsible for your account's security and activities.</p>
+                    <p className="text-sm">You are responsible for your account&apos;s security and activities.</p>
                 </div>
             </Modal>
 

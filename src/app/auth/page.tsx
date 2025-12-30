@@ -197,7 +197,7 @@ export default function AuthPage() {
             transition={{ delay: 1 }}
             className="p-8 rounded-3xl bg-black/20 backdrop-blur-sm border border-white/5"
           >
-            <p className="text-white/70 italic mb-4">"The WhatsApp integration changed the game. I've saved over $400 in forgotten subscriptions this year alone."</p>
+            <p className="text-white/70 italic mb-4">&quot;The WhatsApp integration changed the game. I&apos;ve saved over $400 in forgotten subscriptions this year alone.&quot;</p>
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-full bg-primary-400"></div>
               <div>
