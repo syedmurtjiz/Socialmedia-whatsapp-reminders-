@@ -4,6 +4,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
 import { ConsoleCleanup } from '@/components/ConsoleCleanup'
+import Footer from '@/components/layout/Footer'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -41,8 +42,11 @@ export default function RootLayout({
           <ThemeProvider>
             <AuthProvider>
               <NotificationProvider>
-                <div className="min-h-screen transition-colors duration-300">
-                  {children}
+                <div className="min-h-screen flex flex-col transition-colors duration-300">
+                  <div className="flex-grow">
+                    {children}
+                  </div>
+                  <Footer />
                 </div>
               </NotificationProvider>
             </AuthProvider>
