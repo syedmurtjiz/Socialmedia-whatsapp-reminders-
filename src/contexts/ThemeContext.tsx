@@ -38,13 +38,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.classList.remove('light', 'dark')
       // Add the new theme class
       root.classList.add(newTheme)
-      
+
       // Update meta theme color for mobile browsers
       const metaThemeColor = document.querySelector('meta[name="theme-color"]')
       if (metaThemeColor) {
         metaThemeColor.setAttribute('content', newTheme === 'dark' ? '#2d1f1a' : '#ffffff')
       }
-      
+
       // Debug: Log the current classes
       console.log('Theme applied:', newTheme, 'Classes:', root.classList.toString())
     }
@@ -66,14 +66,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(newTheme)
   }
 
-  // Prevent hydration mismatch
-  if (!mounted) {
-    return <div style={{ visibility: 'hidden' }}>{children}</div>
-  }
-
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-      {children}
+      {!mounted ? (
+        <div style={{ visibility: 'hidden' }}>{children}</div>
+      ) : (
+        children
+      )}
     </ThemeContext.Provider>
   )
 }
@@ -86,8 +85,8 @@ export function useTheme() {
     if (typeof window === 'undefined') {
       return {
         theme: 'light' as Theme,
-        toggleTheme: () => {},
-        setTheme: () => {}
+        toggleTheme: () => { },
+        setTheme: () => { }
       }
     }
     // In client-side, throw error as before
