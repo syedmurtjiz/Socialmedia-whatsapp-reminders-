@@ -1,36 +1,77 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import { FiMenu, FiX } from 'react-icons/fi'
 
 export default function Header() {
+    const [isScrolled, setIsScrolled] = useState(false)
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20)
+        }
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
+
     return (
-        <header className="bg-white/80 dark:bg-chocolate-900/80 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-chocolate-700 transition-colors duration-300 sticky top-0 z-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-20">
-                    <div className="flex items-center">
+        <>
+            <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-200 ${isScrolled
+                    ? 'bg-white dark:bg-chocolate-950 border-b border-gray-200 dark:border-chocolate-800'
+                    : 'bg-transparent'
+                }`}>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16 sm:h-20">
+                        {/* Logo */}
                         <Link href="/" className="flex items-center">
                             <Image
                                 src="/logo.png"
-                                alt="Logo"
-                                width={120}
-                                height={10}
-                                className="mx-auto"
+                                alt="DuePilot"
+                                width={110}
+                                height={35}
+                                className="h-auto w-auto"
+                                priority
                             />
                         </Link>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                        <ThemeToggle />
-                        <Link
-                            href="/auth"
-                            className="text-gray-600 dark:text-chocolate-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors"
-                        >
-                            Sign In
-                        </Link>
+
+                        {/* Desktop Navigation */}
+                        <nav className="hidden md:flex items-center space-x-8">
+                            <Link href="/#features" className="text-sm font-medium text-gray-600 dark:text-chocolate-200 hover:text-primary-600 dark:hover:text-primary-400">
+                                Features
+                            </Link>
+                            <Link href="/auth" className="text-sm font-medium text-gray-600 dark:text-chocolate-200 hover:text-primary-600 dark:hover:text-primary-400">
+                                Sign In
+                            </Link>
+                            <ThemeToggle />
+                        </nav>
+
+                        {/* Mobile Controls */}
+                        <div className="flex md:hidden items-center space-x-4">
+                            <ThemeToggle />
+                            <button
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                className="p-2 text-gray-600 dark:text-chocolate-200"
+                            >
+                                {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </header>
+            </header>
+
+            {/* Mobile Menu */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-40 bg-white dark:bg-chocolate-950 px-6 pt-24 md:hidden">
+                    <nav className="flex flex-col space-y-6">
+                        <Link href="/#features" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-gray-900 dark:text-white">Features</Link>
+                        <Link href="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-gray-900 dark:text-white">Sign In</Link>
+                    </nav>
+                </div>
+            )}
+        </>
     )
 }
