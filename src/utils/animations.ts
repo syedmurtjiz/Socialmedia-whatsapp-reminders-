@@ -382,7 +382,7 @@ export const isScrollTriggerAvailable = () => {
   return !!(gsap && ScrollTrigger)
 }
 
-export default {
+const animationsUtil = {
   animations,
   animatePageEnter,
   animateFadeInUp,
@@ -403,3 +403,5 @@ export default {
   isGSAPAvailable,
   isScrollTriggerAvailable
 }
+
+export default animationsUtil
