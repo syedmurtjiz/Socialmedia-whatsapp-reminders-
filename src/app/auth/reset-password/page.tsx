@@ -34,7 +34,7 @@ export default function ResetPasswordPage() {
     }
     
     checkSession()
-  }, [])
+  }, [supabase])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
