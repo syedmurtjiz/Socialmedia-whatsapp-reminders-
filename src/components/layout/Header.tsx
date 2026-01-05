@@ -5,18 +5,27 @@ import Link from 'next/link'
 import Image from 'next/image'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { FiMenu, FiX } from 'react-icons/fi'
+import { useAuth } from '@/contexts/AuthContext'
+import DashboardHeader from '@/components/ui/DashboardHeader'
 
 export default function Header() {
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const { user } = useAuth()
 
     useEffect(() => {
+        if (user) return
+
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20)
         }
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
-    }, [])
+    }, [user])
+
+    if (user) {
+        return <DashboardHeader activePage="dashboard" />
+    }
 
     return (
         <>
@@ -40,8 +49,8 @@ export default function Header() {
 
                         {/* Desktop Navigation */}
                         <nav className="hidden md:flex items-center space-x-8">
-                            <Link href="/#features" className="text-sm font-medium text-gray-600 dark:text-chocolate-200 hover:text-primary-600 dark:hover:text-primary-400">
-                                Features
+                            <Link href="/" className="text-sm font-medium text-gray-600 dark:text-chocolate-200 hover:text-primary-600 dark:hover:text-primary-400">
+                                Home
                             </Link>
                             <Link href="/auth" className="text-sm font-medium text-gray-600 dark:text-chocolate-200 hover:text-primary-600 dark:hover:text-primary-400">
                                 Sign In
@@ -67,7 +76,7 @@ export default function Header() {
             {isMobileMenuOpen && (
                 <div className="fixed inset-0 z-40 bg-white dark:bg-chocolate-950 px-6 pt-24 md:hidden">
                     <nav className="flex flex-col space-y-6">
-                        <Link href="/#features" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-gray-900 dark:text-white">Features</Link>
+                        <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-gray-900 dark:text-white">Home</Link>
                         <Link href="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-gray-900 dark:text-white">Sign In</Link>
                     </nav>
                 </div>
