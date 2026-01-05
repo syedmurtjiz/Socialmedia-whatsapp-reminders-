@@ -1,6 +1,7 @@
+
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { FiUser, FiBell, FiCreditCard, FiSave, FiCheck, FiAlertCircle, FiX } from 'react-icons/fi'
@@ -32,20 +33,8 @@ export default function Settings() {
     whatsapp_number: ''
   })
 
-  // Initialize form data
-  useEffect(() => {
-    if (user) {
-      setProfileForm({
-        full_name: user.user_metadata?.full_name || '',
-        email: user.email || '',
-        timezone: user.user_metadata?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
-      })
-      loadWhatsAppNumber()
-    }
-  }, [user])
-
   // Load WhatsApp number from user_profiles
-  const loadWhatsAppNumber = async () => {
+  const loadWhatsAppNumber = useCallback(async () => {
     if (!user) return
     try {
       const { data, error } = await (supabase as any)
@@ -63,7 +52,19 @@ export default function Settings() {
     } catch (error) {
       console.error('Error loading WhatsApp number:', error)
     }
-  }
+  }, [user])
+
+  // Initialize form data
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        full_name: user.user_metadata?.full_name || '',
+        email: user.email || '',
+        timezone: user.user_metadata?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
+      })
+      loadWhatsAppNumber()
+    }
+  }, [user, loadWhatsAppNumber])
 
   // Handle profile form changes
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
