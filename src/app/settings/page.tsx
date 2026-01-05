@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { createClient } from '@/lib/supabase/client'
 import { LoadingSpinner } from '@/components/ui/loading'
@@ -26,13 +26,7 @@ export default function SettingsPage() {
   const [whatsappNumber, setWhatsappNumber] = useState('')
   const [timezone, setTimezone] = useState('Asia/Karachi')
 
-  useEffect(() => {
-    if (user) {
-      loadProfile()
-    }
-  }, [user])
-
-  async function loadProfile() {
+  const loadProfile = useCallback(async () => {
     try {
       setLoading(true)
       const supabase = createClient()
@@ -56,7 +50,13 @@ export default function SettingsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user) {
+      loadProfile()
+    }
+  }, [user, loadProfile])
 
   async function saveProfile() {
     try {
