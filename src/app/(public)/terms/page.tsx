@@ -50,12 +50,12 @@ export default function TermsPage() {
                             </div>
                             <div className="prose prose-gray dark:prose-invert max-w-none text-gray-600 dark:text-chocolate-200">
                                 <p>
-                                    Permission is granted to temporarily download one copy of the materials (information or software) on DuePilot's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
+                                    Permission is granted to temporarily download one copy of the materials (information or software) on DuePilot{`'`}s website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
                                 </p>
                                 <ul className="list-disc pl-6 space-y-2 mt-4">
                                     <li>Modify or copy the materials.</li>
                                     <li>Use the materials for any commercial purpose, or for any public display (commercial or non-commercial).</li>
-                                    <li>Attempt to decompile or reverse engineer any software contained on DuePilot's website.</li>
+                                    <li>Attempt to decompile or reverse engineer any software contained on DuePilot{`'`}s website.</li>
                                     <li>Remove any copyright or other proprietary notations from the materials.</li>
                                 </ul>
                             </div>
@@ -82,7 +82,7 @@ export default function TermsPage() {
                             </div>
                             <div className="prose prose-gray dark:prose-invert max-w-none text-gray-600 dark:text-chocolate-200">
                                 <p>
-                                    The materials on DuePilot's website are provided on an 'as is' basis. DuePilot makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
+                                    The materials on DuePilot{`'`}s website are provided on an {`'`}as is{`'`} basis. DuePilot makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
                                 </p>
                             </div>
                         </section>
