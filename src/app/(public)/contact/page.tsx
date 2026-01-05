@@ -93,7 +93,7 @@ export default function ContactPage() {
                                         <h4 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Our Commitment</h4>
                                     </div>
                                     <p className="text-lg text-gray-600 dark:text-chocolate-200 leading-relaxed italic relative z-10 blockquote border-l-4 border-primary-200 dark:border-chocolate-600 pl-6">
-                                        "Our team is dedicated to providing you with the best subscription management experience. We constantly strive to improve our services based on your valuable feedback."
+                                        {'"'}Our team is dedicated to providing you with the best subscription management experience. We constantly strive to improve our services based on your valuable feedback.{'"'}
                                     </p>
                                 </div>
                             </div>
