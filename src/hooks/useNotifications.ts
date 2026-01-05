@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { Notification } from '@/types'
@@ -9,7 +9,7 @@ export function useNotifications() {
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!user) {
       setNotifications([])
       setLoading(false)
@@ -37,7 +37,7 @@ export function useNotifications() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   const markAsRead = async (notificationId: string) => {
     if (!user) return
@@ -145,7 +145,7 @@ export function useNotifications() {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [user])
+  }, [user, fetchNotifications])
 
   return {
     notifications,
