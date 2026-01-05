@@ -64,7 +64,7 @@ export default function ThemeToggle() {
         ease: 'back.out(1.7)'
       }, 0.1)
     }
-  }, [theme])
+  }, [theme, mounted])
 
   const handleClick = () => {
     // Add click animation if GSAP is available
