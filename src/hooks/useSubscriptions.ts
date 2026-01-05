@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { Subscription, CreateSubscriptionForm } from '@/types'
@@ -10,7 +10,7 @@ export function useSubscriptions() {
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
 
-  const fetchSubscriptions = async () => {
+  const fetchSubscriptions = useCallback(async () => {
     if (!user) return
 
     try {
@@ -32,7 +32,7 @@ export function useSubscriptions() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   const addSubscription = async (subscriptionData: CreateSubscriptionForm) => {
     if (!user) {
@@ -272,7 +272,7 @@ export function useSubscriptions() {
 
   useEffect(() => {
     fetchSubscriptions()
-  }, [user])
+  }, [user, fetchSubscriptions])
 
   return {
     subscriptions,
