@@ -10,27 +10,79 @@ import { formatCurrency, formatDatePakistani as formatDate, getDaysUntilPayment 
 import Link from 'next/link'
 import DashboardHeader from '@/components/ui/DashboardHeader'
 import StatsCard from '@/components/ui/StatsCard'
-import LoadingState from '@/components/ui/LoadingState'
+
+ function AnalyticsSkeleton() {
+   return (
+     <div className="min-h-screen bg-gray-50 dark:bg-chocolate-950 transition-colors duration-300">
+       <DashboardHeader activePage="analytics" />
+       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+         <div className="mb-8 animate-pulse">
+           <div className="h-8 w-40 bg-gray-200 dark:bg-chocolate-800 rounded mb-2"></div>
+           <div className="h-4 w-96 max-w-full bg-gray-200 dark:bg-chocolate-800 rounded"></div>
+         </div>
+
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-pulse">
+           <div className="h-24 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-lg"></div>
+           <div className="h-24 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-lg"></div>
+           <div className="h-24 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-lg"></div>
+           <div className="h-24 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-lg"></div>
+         </div>
+
+         <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300 mb-8 animate-pulse">
+           <div className="p-6 border-b border-gray-200 dark:border-chocolate-700">
+             <div className="h-5 w-64 bg-gray-200 dark:bg-chocolate-800 rounded"></div>
+           </div>
+           <div className="p-6 space-y-4">
+             <div className="h-4 w-40 bg-gray-200 dark:bg-chocolate-800 rounded"></div>
+             <div className="h-4 w-full bg-gray-200 dark:bg-chocolate-800 rounded"></div>
+             <div className="h-4 w-5/6 bg-gray-200 dark:bg-chocolate-800 rounded"></div>
+             <div className="h-4 w-2/3 bg-gray-200 dark:bg-chocolate-800 rounded"></div>
+           </div>
+         </div>
+
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8 animate-pulse">
+           <div className="bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-lg h-80"></div>
+           <div className="bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-lg h-80"></div>
+         </div>
+
+         <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300 mb-8 animate-pulse">
+           <div className="p-6 border-b border-gray-200 dark:border-chocolate-700">
+             <div className="h-5 w-72 bg-gray-200 dark:bg-chocolate-800 rounded"></div>
+           </div>
+           <div className="p-6">
+             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+               <div className="h-24 bg-gray-100 dark:bg-chocolate-800 rounded-lg"></div>
+               <div className="h-24 bg-gray-100 dark:bg-chocolate-800 rounded-lg"></div>
+               <div className="h-24 bg-gray-100 dark:bg-chocolate-800 rounded-lg"></div>
+               <div className="h-24 bg-gray-100 dark:bg-chocolate-800 rounded-lg"></div>
+             </div>
+           </div>
+         </div>
+       </main>
+     </div>
+   )
+ }
 
 export default function Analytics() {
-  const { user, loading, signOut } = useAuth()
+  const { user, loading: authLoading, signOut } = useAuth()
   const {
     subscriptions,
+    loading: subscriptionsLoading,
     getActiveSubscriptions,
     getTotalMonthlyCost,
     getTotalYearlyCost
   } = useSubscriptions()
-  const { notifications } = useNotifications()
+  const { notifications, loading: notificationsLoading } = useNotifications()
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push('/auth')
     }
-  }, [user, loading, router])
+  }, [user, authLoading, router])
 
-  if (loading) {
-    return <LoadingState message="Loading analytics..." fullscreen />
+  if (authLoading || subscriptionsLoading || notificationsLoading) {
+    return <AnalyticsSkeleton />
   }
 
   const activeSubscriptions = getActiveSubscriptions()

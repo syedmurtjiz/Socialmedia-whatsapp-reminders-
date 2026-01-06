@@ -17,7 +17,40 @@ import {
 } from 'react-icons/fi'
 import { formatCurrency, formatDatePakistani as formatDate, getDaysUntilPayment, getBillingCycleText } from '@/utils'
 import DashboardHeader from '@/components/ui/DashboardHeader'
-import LoadingState from '@/components/ui/LoadingState'
+
+ function SubscriptionsSkeleton() {
+   return (
+     <div className="min-h-screen bg-gray-50 dark:bg-chocolate-950 transition-colors duration-300">
+       <DashboardHeader activePage="subscriptions" />
+       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4 animate-pulse">
+           <div>
+             <div className="h-8 w-56 bg-gray-200 dark:bg-chocolate-800 rounded mb-2"></div>
+             <div className="h-4 w-96 max-w-full bg-gray-200 dark:bg-chocolate-800 rounded"></div>
+           </div>
+           <div className="h-11 w-44 bg-gray-200 dark:bg-chocolate-800 rounded-lg"></div>
+         </div>
+
+         <div className="bg-white dark:bg-chocolate-900 rounded-xl shadow-lg dark:shadow-2xl p-4 sm:p-6 mb-6 transition-colors duration-300 animate-pulse">
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+             <div className="h-12 bg-gray-100 dark:bg-chocolate-800 rounded-lg"></div>
+             <div className="h-12 bg-gray-100 dark:bg-chocolate-800 rounded-lg"></div>
+             <div className="h-12 bg-gray-100 dark:bg-chocolate-800 rounded-lg"></div>
+           </div>
+         </div>
+
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 animate-pulse">
+           <div className="h-56 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-xl"></div>
+           <div className="h-56 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-xl"></div>
+           <div className="h-56 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-xl"></div>
+           <div className="h-56 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-xl"></div>
+           <div className="h-56 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-xl"></div>
+           <div className="h-56 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-xl"></div>
+         </div>
+       </div>
+     </div>
+   )
+ }
 
 export default function SubscriptionsPage() {
   const { user, loading: authLoading, signOut } = useAuth()
@@ -30,7 +63,7 @@ export default function SubscriptionsPage() {
     deleteSubscription, 
     toggleSubscriptionStatus 
   } = useSubscriptions()
-  const { banks } = useBanks()
+  const { banks, loading: banksLoading } = useBanks()
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -59,6 +92,24 @@ export default function SubscriptionsPage() {
       router.push('/auth')
     }
   }, [user, authLoading, router])
+
+  if (authLoading) {
+    return <SubscriptionsSkeleton />
+  }
+
+  if (showForm) {
+    return (
+      <SubscriptionForm
+        subscription={editingSubscription}
+        onSubmit={editingSubscription ? handleEditSubscription : handleAddSubscription}
+        onCancel={handleCancel}
+      />
+    )
+  }
+
+  if (loading || banksLoading) {
+    return <SubscriptionsSkeleton />
+  }
 
   const handleAddSubscription = async (data: CreateSubscriptionForm) => {
     try {
@@ -150,20 +201,6 @@ export default function SubscriptionsPage() {
         return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
       }
     })
-
-  if (authLoading || loading) {
-    return <LoadingState message="Loading subscriptions..." fullscreen />
-  }
-
-  if (showForm) {
-    return (
-      <SubscriptionForm
-        subscription={editingSubscription}
-        onSubmit={editingSubscription ? handleEditSubscription : handleAddSubscription}
-        onCancel={handleCancel}
-      />
-    )
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-chocolate-950 transition-colors duration-300">

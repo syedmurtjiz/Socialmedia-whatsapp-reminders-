@@ -10,18 +10,63 @@ import { formatCurrency, formatDatePakistani as formatDate, getDaysUntilPayment 
 import Link from 'next/link'
 import DashboardHeader from '@/components/ui/DashboardHeader'
 import StatsCard from '@/components/ui/StatsCard'
-import LoadingState from '@/components/ui/LoadingState'
+
+ function DashboardSkeleton() {
+   return (
+     <div className="min-h-screen bg-gray-50 dark:bg-chocolate-950 transition-colors duration-300">
+       <DashboardHeader activePage="dashboard" />
+       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+         <div className="mb-6 sm:mb-8 animate-pulse">
+           <div className="h-8 w-64 bg-gray-200 dark:bg-chocolate-800 rounded mb-3"></div>
+           <div className="h-4 w-96 max-w-full bg-gray-200 dark:bg-chocolate-800 rounded"></div>
+         </div>
+
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8 animate-pulse">
+           <div className="h-24 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-lg"></div>
+           <div className="h-24 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-lg"></div>
+           <div className="h-24 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-lg"></div>
+           <div className="h-24 bg-white dark:bg-chocolate-900 border border-gray-200 dark:border-chocolate-700 rounded-lg"></div>
+         </div>
+
+         <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl mb-6 sm:mb-8 transition-colors duration-300 animate-pulse">
+           <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-chocolate-700">
+             <div className="h-5 w-40 bg-gray-200 dark:bg-chocolate-800 rounded"></div>
+           </div>
+           <div className="p-4 sm:p-6">
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+               <div className="h-14 border-2 border-dashed border-gray-200 dark:border-chocolate-700 rounded-lg"></div>
+               <div className="h-14 border-2 border-dashed border-gray-200 dark:border-chocolate-700 rounded-lg"></div>
+               <div className="h-14 border-2 border-dashed border-gray-200 dark:border-chocolate-700 rounded-lg"></div>
+             </div>
+           </div>
+         </div>
+
+         <div className="bg-white dark:bg-chocolate-900 rounded-lg shadow-lg dark:shadow-2xl transition-colors duration-300 animate-pulse">
+           <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-chocolate-700">
+             <div className="h-5 w-44 bg-gray-200 dark:bg-chocolate-800 rounded"></div>
+           </div>
+           <div className="p-4 sm:p-6 space-y-4">
+             <div className="h-16 bg-gray-100 dark:bg-chocolate-800 rounded-lg"></div>
+             <div className="h-16 bg-gray-100 dark:bg-chocolate-800 rounded-lg"></div>
+             <div className="h-16 bg-gray-100 dark:bg-chocolate-800 rounded-lg"></div>
+           </div>
+         </div>
+       </main>
+     </div>
+   )
+ }
 
 export default function Dashboard() {
-  const { user, loading, signOut } = useAuth()
+  const { user, loading: authLoading, signOut } = useAuth()
   const {
     subscriptions,
+    loading: subscriptionsLoading,
     getActiveSubscriptions,
     getUpcomingPayments,
     getTotalMonthlyCost,
     getTotalYearlyCost
   } = useSubscriptions()
-  const { notifications, getUnreadCount } = useNotifications()
+  const { notifications, getUnreadCount, loading: notificationsLoading } = useNotifications()
   const router = useRouter()
 
   // Calculate dashboard statistics
@@ -38,13 +83,13 @@ export default function Dashboard() {
   const recentNotifications = notifications.slice(0, 5)
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push('/auth')
     }
-  }, [user, loading, router])
+  }, [user, authLoading, router])
 
-  if (loading) {
-    return <LoadingState message="Loading dashboard..." fullscreen />
+  if (authLoading || subscriptionsLoading || notificationsLoading) {
+    return <DashboardSkeleton />
   }
 
   return (
